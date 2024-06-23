@@ -4,9 +4,9 @@ const client = new Client({
   auth: process.env.NOTION_SECRET_TOKEN,
 });
 
-const getPageMetaData = (post) => {
-  const getTags = (tags) => {
-    const allTags = tags.map(tag => {
+const getPageMetaData = (post: any) => {
+  const getTags = (tags: any) => {
+    const allTags = tags?.map((tag: any) => {
       return tag.name;
     });
 
@@ -15,11 +15,11 @@ const getPageMetaData = (post) => {
 
   return {
     id: post.id,
-    title: post.properties.Name.title[0].plain_text,
-    description: post.properties.Description.rich_text[0].plain_text,
-    updated_on: post.properties.Updated_on.date.start,
-    slug: post.properties.Slug.rich_text[0].plain_text,
-    tags: getTags(post.properties.Tags.multi_select),
+    title: post.properties.Name.title[0]?.plain_text || null,
+    description: post.properties.Description.rich_text[0]?.plain_text || null,
+    updated_on: post.properties.Updated_on.date?.start || null,
+    slug: post.properties.Slug.rich_text[0]?.plain_text || null,
+    tags: post.properties.Tags.multi_select ? getTags(post.properties.Tags.multi_select) : null,
   }
 };
 

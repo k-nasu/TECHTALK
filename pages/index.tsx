@@ -2,8 +2,6 @@ import { Inter } from "next/font/google";
 import { getAllPosts } from "@/lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const getStaticProps = async () => {
   const allPosts = await getAllPosts();
 
