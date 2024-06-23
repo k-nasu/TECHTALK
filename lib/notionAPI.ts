@@ -1,14 +1,10 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md';
+import { PAGE_SIZE } from '@/constants/constants'
 
 const database_id = process.env.NOTION_DATABASE_ID!;
-
-const client = new Client({
-  auth: process.env.NOTION_SECRET_TOKEN,
-});
-
+const client = new Client({ auth: process.env.NOTION_SECRET_TOKEN });
 const n2m = new NotionToMarkdown({ notionClient: client })
-
 
 const getPageMetaData = (post: any) => {
   const getTags = (tags: any) => {
@@ -21,10 +17,10 @@ const getPageMetaData = (post: any) => {
 
   return {
     id: post.id,
-    title: post.properties.Title.title[0]?.plain_text || null,
+    title: post.properties.Title.title[0].plain_text,
     description: post.properties.Description.rich_text[0]?.plain_text || null,
     updated_on: post.properties.Updated_on.date?.start || null,
-    slug: post.properties.Slug.rich_text[0]?.plain_text || null,
+    slug: post.properties.Slug.rich_text[0].plain_text,
     tags: post.properties.Tags.multi_select ? getTags(post.properties.Tags.multi_select) : null,
   }
 };
@@ -98,4 +94,26 @@ export const getSinglePost = async (slug: string) => {
     metadata,
     markdown: mdString.parent || null
   }
+}
+
+export const getPostsForTopPage = async (pageSize: number) => {
+  const allPosts = await getAllPosts()
+  const initialPosts = allPosts.slice(0, pageSize)
+
+  return initialPosts
+}
+
+export const getPostsByPage = async (page: number) => {
+  const allPosts = await getAllPosts();
+
+  const startIndex = (page - 1) * PAGE_SIZE
+  const endIndex = startIndex + PAGE_SIZE
+
+  return allPosts.slice(startIndex, endIndex)
+}
+
+export const getPageNumber = async () => {
+  const allPosts = await getAllPosts()
+
+  return Math.floor(allPosts.length / PAGE_SIZE) + (allPosts.length % PAGE_SIZE > 0 ? 1 : 0)
 }
