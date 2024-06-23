@@ -21,7 +21,7 @@ const getPageMetaData = (post: any) => {
 
   return {
     id: post.id,
-    title: post.properties.Name.title[0]?.plain_text || null,
+    title: post.properties.Title.title[0]?.plain_text || null,
     description: post.properties.Description.rich_text[0]?.plain_text || null,
     updated_on: post.properties.Updated_on.date?.start || null,
     slug: post.properties.Slug.rich_text[0]?.plain_text || null,
@@ -34,6 +34,38 @@ export const getAllPosts = async () => {
   const posts = await client.databases.query({
     database_id: database_id,
     page_size: 100,
+    sorts: [
+      {
+        property: "Updated_on",
+        direction: "descending",
+      }
+    ],
+    filter: {
+      and: [
+        {
+          property: "Slug",
+          formula: {
+            string: {
+              is_not_empty: true
+            }
+          }
+        },
+        {
+          property: "Title",
+          formula: {
+            string: {
+              is_not_empty: true
+            }
+          }
+        },
+        {
+          property: "Published",
+          checkbox: {
+            equals: true
+          }
+        }
+      ]
+    }
   });
 
   const allPosts = posts.results;
