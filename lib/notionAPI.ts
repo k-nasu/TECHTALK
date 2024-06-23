@@ -1,5 +1,7 @@
 import { Client } from '@notionhq/client'
 
+const database_id = process.env.NOTION_DATABASE_ID!;
+
 const client = new Client({
   auth: process.env.NOTION_SECRET_TOKEN,
 });
@@ -23,9 +25,10 @@ const getPageMetaData = (post: any) => {
   }
 };
 
+// 記事一覧取得
 export const getAllPosts = async () => {
   const posts = await client.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID!,
+    database_id: database_id,
     page_size: 100,
   });
 
@@ -35,3 +38,25 @@ export const getAllPosts = async () => {
     return getPageMetaData(post);
   }))
 };
+
+// 記事一部取得
+export const getSinglePost = async (slug: string) => {
+  const res = await client.databases.query({
+    database_id: database_id,
+    filter: {
+      property: "Slug",
+      formula: {
+        string: {
+          equals: slug,
+        }
+      }
+    }
+  })
+
+  const page = res.results[0]
+  const metadata = getPageMetaData(page)
+
+  return {
+    metadata,
+  }
+}
