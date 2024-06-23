@@ -3,6 +3,7 @@ import { getAllPosts, getSinglePost } from '@/lib/notionAPI'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import Link from 'next/link';
 
 const CodeBlock = ({ inline, className, children }: any) => {
   if (inline) {
@@ -56,6 +57,7 @@ const Post = ({ post }) => {
       ))}
       <div className="mt-10 font-medium">
         <ReactMarkdown components={{ code: CodeBlock }}>{post.markdown}</ReactMarkdown>
+        <Link href="/" className="pb-20 block mt-10 text-sky-900"><span>⇦ ホームに戻る</span></Link>
       </div>
     </section>
   )
