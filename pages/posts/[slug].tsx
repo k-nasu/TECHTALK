@@ -45,20 +45,34 @@ export const getStaticProps = async ({ params }: any) => {
 
 const Post = ({ post }) => {
   return (
-    <section className="container lg:px-2 px-5 h-screen lg:w-2/5 mx-auto mt-20">
-      <h2 className="w-full text-4xl font-bold border-b-2 pb-2 mb-6">{post.metadata.title}</h2>
+    <section className="container lg:px-2 px-5 h-screen lg:w-3/5 mx-auto mt-20">
+      <h1 className="w-full text-5xl font-bold pb-2 mb-6">{post.metadata.title}</h1>
       {post.metadata.tags.map((tag: string, index: number) => (
         <Tag key={index} tag={tag} />
       ))}
       <br/>
-      <span className="text-sm text-gray-500 inline-block mt-3">更新日：{post.metadata.updated_on}</span>
-      <div className="mt-24 font-medium text-lg">
+      <span className="text-sm text-blue-700 inline-block mt-4">更新日：{post.metadata.updated_on}</span>
+      <div className="mt-20  text-lg">
         {
           post.markdown ?
-          <ReactMarkdown components={{ code: CodeBlock }}>{post.markdown}</ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              code: CodeBlock,
+              h2: ({ children }) => <h2 className="text-4xl pb-2 mt-24 mb-8 font-bold border-b-2 border-blue-400">{children}</h2>,
+              h3: ({ children }) => <h3 className="text-2xl font-bold">{children}</h3>,
+              ol: ({ children }) => <ol className="mb-16">{children}</ol>,
+              ul: ({ children }) => <ul className="mb-6 pl-4">{children}</ul>,
+              li: ({ children }) => <li className="mb-6">{children}</li>,
+              p: ({ children }) => <p className="my-6 leading-8">{children}</p>,
+              a: ({ children, href }) => <Link href={href!} rel="noopener noreferrer" target="_blank" className="text-blue-600">{children}</Link>,
+              pre: ({ children }) => <pre className="mb-10">{children}</pre>,
+            }}
+          >
+            {post.markdown}
+          </ReactMarkdown>
           : "記事準備中"
         }
-        <Link href="/" className="pb-20 block mt-10 text-blue-600"><span>⇦ ホームに戻る</span></Link>
+        <Link href="/" className="block mt-20 pb-20 text-blue-600"><span>⇦ ホームに戻る</span></Link>
       </div>
     </section>
   )

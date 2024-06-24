@@ -23,7 +23,7 @@ export default function Home({ posts }: Props) {
   return (
     <div className="font-sans lg:w-4/5 mx-auto h-full lg:flex">
       <aside className="lg:basis-1/4 px-4 pt-16">
-        ここにタグの一覧を出す
+        {/* ここにタグの一覧を出す */}
       </aside>
       <main className="container lg:basis-2/4 lg:mx-5 px-4 pt-16">
         <section>
