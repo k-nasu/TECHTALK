@@ -133,7 +133,7 @@ const Article = ({ article }: any) => {
         article.markdown ?
         <div className="mt-20 lg:flex flex-row-reverse">
           <div className="mb-20">
-            <h4 className="pb-3 font-bold">目次</h4>
+            <h2 className="pb-3">目次</h2>
             <ul>
               <ReactMarkdown
                 allowedElements={['h2']}
@@ -145,7 +145,7 @@ const Article = ({ article }: any) => {
               </ReactMarkdown>
             </ul>
           </div>
-          <div className="text-lg lg:w-4/5 pr-20">
+          <div className="text-lg lg:w-4/5 lg:pr-20">
             <ReactMarkdown
               components={{
                 code: CodeBlock,
@@ -164,7 +164,7 @@ const Article = ({ article }: any) => {
             </ReactMarkdown>
           </div>
         </div>
-        : "記事準備中"
+        : <div className="mt-20">記事準備中</div>
       }
       <Link href="/articles/page/1" className="block mt-20 pb-20 text-blue-600 text-right"><span>記事一覧を見る</span></Link>
     </section>
