@@ -2,14 +2,14 @@ import { getPostsForTopPage } from "@/lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
 import { Post } from "@/types/types";
 import Link from "next/link";
-import { PAGE_SIZE } from "@/constants/constants"
+import { INITIAL_PAGE_POST_SIZE } from "@/constants/constants"
 
 type Props = {
   posts: Post[]
 };
 
 export const getStaticProps = async () => {
-  const posts = await getPostsForTopPage(PAGE_SIZE);
+  const posts = await getPostsForTopPage(INITIAL_PAGE_POST_SIZE);
 
   return {
     props: {
@@ -23,7 +23,7 @@ export default function Home({ posts }: Props) {
   return (
     <div className="font-sans lg:w-4/5 mx-auto h-full lg:flex">
       <aside className="lg:basis-1/4 px-4 pt-16">
-        {/* タグ */}
+        ここにタグの一覧を出す
       </aside>
       <main className="container lg:basis-2/4 lg:mx-5 px-4 pt-16">
         <h3 className="mb-5">トレンドの記事</h3>

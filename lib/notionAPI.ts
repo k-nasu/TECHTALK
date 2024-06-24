@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md';
-import { PAGE_SIZE } from '@/constants/constants'
+import { NOTION_POST_QUERY_PAGE_SIZE, ALL_POSTS_PAGE_POST_SIZE } from '@/constants/constants'
 
 const database_id = process.env.NOTION_DATABASE_ID!;
 const client = new Client({ auth: process.env.NOTION_SECRET_TOKEN });
@@ -29,7 +29,7 @@ const getPageMetaData = (post: any) => {
 export const getAllPosts = async () => {
   const posts = await client.databases.query({
     database_id: database_id,
-    page_size: 100,
+    page_size: NOTION_POST_QUERY_PAGE_SIZE,
     sorts: [
       {
         property: "Updated_on",
@@ -106,8 +106,8 @@ export const getPostsForTopPage = async (pageSize: number) => {
 export const getPostsByPage = async (page: number) => {
   const allPosts = await getAllPosts();
 
-  const startIndex = (page - 1) * PAGE_SIZE
-  const endIndex = startIndex + PAGE_SIZE
+  const startIndex = (page - 1) * ALL_POSTS_PAGE_POST_SIZE
+  const endIndex = startIndex + ALL_POSTS_PAGE_POST_SIZE
 
   return allPosts.slice(startIndex, endIndex)
 }
@@ -115,5 +115,5 @@ export const getPostsByPage = async (page: number) => {
 export const getPageNumbers = async () => {
   const allPosts = await getAllPosts()
 
-  return Math.floor(allPosts.length / PAGE_SIZE) + (allPosts.length % PAGE_SIZE > 0 ? 1 : 0)
+  return Math.floor(allPosts.length / ALL_POSTS_PAGE_POST_SIZE) + (allPosts.length % ALL_POSTS_PAGE_POST_SIZE > 0 ? 1 : 0)
 }
