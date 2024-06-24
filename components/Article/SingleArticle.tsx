@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import React from 'react'
-import { Post } from "@/types/types";
+import { Article } from "@/types/types";
 import Tag from '@/components/Tag/Tag';
 
-const SinglePost = (props: Post) => {
+const SingleArticle = (props: Article) => {
   const { title, description, updated_on, slug, tags, isPaginationPage } = props;
 
   return (
-    <Link href={`/posts/${slug}`}>
+    <Link href={`/articles/${slug}`}>
       {isPaginationPage ? (
         <section className="text-gray-800 mb-8 mx-auto rounded-md p-5 shadow-2xl hover:shadow-none hover:translate-y-1 transition-all duration-300">
           <span className="text-sm text-blue-700">{updated_on}</span><br/>
@@ -31,4 +31,4 @@ const SinglePost = (props: Post) => {
   )
 }
 
-export default SinglePost;
+export default SingleArticle;

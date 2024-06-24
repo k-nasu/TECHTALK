@@ -1,12 +1,12 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md';
-import { NOTION_POST_QUERY_PAGE_SIZE, ALL_POSTS_PAGE_POST_SIZE } from '@/constants/constants'
+import { NOTION_ARTICLE_QUERY_PAGE_SIZE, ALL_ARTICLES_PAGE_ARTICLE_SIZE } from '@/constants/constants'
 
 const database_id = process.env.NOTION_DATABASE_ID!;
 const client = new Client({ auth: process.env.NOTION_SECRET_TOKEN });
 const n2m = new NotionToMarkdown({ notionClient: client })
 
-const getPageMetaData = (post: any) => {
+const getPageMetaData = (article: any) => {
   const getTags = (tags: any) => {
     const allTags = tags?.map((tag: any) => {
       return tag.name;
@@ -16,20 +16,20 @@ const getPageMetaData = (post: any) => {
   };
 
   return {
-    id: post.id,
-    title: post.properties.Title.title[0].plain_text,
-    description: post.properties.Description.rich_text[0]?.plain_text || null,
-    updated_on: post.properties.Updated_on.date?.start || null,
-    slug: post.properties.Slug.rich_text[0].plain_text,
-    tags: post.properties.Tags.multi_select ? getTags(post.properties.Tags.multi_select) : null,
+    id: article.id,
+    title: article.properties.Title.title[0].plain_text,
+    description: article.properties.Description.rich_text[0]?.plain_text || null,
+    updated_on: article.properties.Updated_on.date?.start || null,
+    slug: article.properties.Slug.rich_text[0].plain_text,
+    tags: article.properties.Tags.multi_select ? getTags(article.properties.Tags.multi_select) : null,
   }
 };
 
 // 記事一覧取得
-export const getAllPosts = async () => {
-  const posts = await client.databases.query({
+export const getAllArticles = async () => {
+  const articles = await client.databases.query({
     database_id: database_id,
-    page_size: NOTION_POST_QUERY_PAGE_SIZE,
+    page_size: NOTION_ARTICLE_QUERY_PAGE_SIZE,
     sorts: [
       {
         property: "Updated_on",
@@ -64,15 +64,15 @@ export const getAllPosts = async () => {
     }
   });
 
-  const allPosts = posts.results;
+  const allArticles = articles.results;
 
-  return allPosts.map((post => {
-    return getPageMetaData(post);
+  return allArticles.map((article => {
+    return getPageMetaData(article);
   }))
 };
 
 // 記事一部取得
-export const getSinglePost = async (slug: string) => {
+export const getSingleArticle = async (slug: string) => {
   const res = await client.databases.query({
     database_id: database_id,
     filter: {
@@ -96,24 +96,24 @@ export const getSinglePost = async (slug: string) => {
   }
 }
 
-export const getPostsForTopPage = async (pageSize: number) => {
-  const allPosts = await getAllPosts()
-  const initialPosts = allPosts.slice(0, pageSize)
+export const getArticlesForTopPage = async (pageSize: number) => {
+  const allArticles = await getAllArticles()
+  const initialArticles = allArticles.slice(0, pageSize)
 
-  return initialPosts
+  return initialArticles
 }
 
-export const getPostsByPage = async (page: number) => {
-  const allPosts = await getAllPosts();
+export const getArticlesByPage = async (page: number) => {
+  const allArticles = await getAllArticles();
 
-  const startIndex = (page - 1) * ALL_POSTS_PAGE_POST_SIZE
-  const endIndex = startIndex + ALL_POSTS_PAGE_POST_SIZE
+  const startIndex = (page - 1) * ALL_ARTICLES_PAGE_ARTICLE_SIZE
+  const endIndex = startIndex + ALL_ARTICLES_PAGE_ARTICLE_SIZE
 
-  return allPosts.slice(startIndex, endIndex)
+  return allArticles.slice(startIndex, endIndex)
 }
 
 export const getPageNumbers = async () => {
-  const allPosts = await getAllPosts()
+  const allArticles = await getAllArticles()
 
-  return Math.floor(allPosts.length / ALL_POSTS_PAGE_POST_SIZE) + (allPosts.length % ALL_POSTS_PAGE_POST_SIZE > 0 ? 1 : 0)
+  return Math.floor(allArticles.length / ALL_ARTICLES_PAGE_ARTICLE_SIZE) + (allArticles.length % ALL_ARTICLES_PAGE_ARTICLE_SIZE > 0 ? 1 : 0)
 }

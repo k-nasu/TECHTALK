@@ -1,10 +1,10 @@
-import { getPostsByPage, getPageNumbers } from "@/lib/notionAPI";
-import SinglePost from "@/components/Post/SinglePost";
+import { getArticlesByPage, getPageNumbers } from "@/lib/notionAPI";
+import SingleArticle from "@/components/Article/SingleArticle";
 import Pagination from "@/components/Pagination/Pagination";
-import { Post } from "@/types/types";
+import { Article } from "@/types/types";
 
 type Props = {
-  posts: Post[];
+  articles: Article[];
   pageNumbers: number;
   currentPage: number;
 };
@@ -24,13 +24,13 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async (context: any) => {
-  const posts = await getPostsByPage(context.params.page);
+  const articles = await getArticlesByPage(context.params.page);
   const pageNumbers = await getPageNumbers();
   const currentPage = context.params.page;
 
   return {
     props: {
-      posts,
+      articles,
       pageNumbers,
       currentPage,
     },
@@ -38,21 +38,21 @@ export const getStaticProps = async (context: any) => {
   };
 };
 
-const pageList = ({ posts, pageNumbers, currentPage}: Props ) => {
+const pageList = ({ articles, pageNumbers, currentPage}: Props ) => {
   return (
     <div className="container lg:w-4/5 h-full mx-auto font-sans">
       <main className="container w-full mt-16">
         <h2 className="font-medium text-center mb-16">トレンドの記事</h2>
         <section className="sm:grid grid-cols-2 mx-4 mb-10 gap-3">
-          {posts.map(post => (
-            <SinglePost
-              key={post.id}
-              id={post.id}
-              title={post.title}
-              description={post.description}
-              updated_on={post.updated_on}
-              slug={post.slug}
-              tags={post.tags}
+          {articles.map(article => (
+            <SingleArticle
+              key={article.id}
+              id={article.id}
+              title={article.title}
+              description={article.description}
+              updated_on={article.updated_on}
+              slug={article.slug}
+              tags={article.tags}
               isPaginationPage={true}
             />
           ))}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { getAllPosts, getSinglePost } from '@/lib/notionAPI'
+import { getAllArticles, getSingleArticle } from '@/lib/notionAPI'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -23,8 +23,9 @@ const CodeBlock = ({ inline, className, children }: any) => {
 };
 
 export const getStaticPaths = async () => {
-  const allPosts = await getAllPosts();
-  const paths = allPosts.map(({slug}) => ({ params: { slug } }))
+  const allArticles = await getAllArticles();
+  const paths = allArticles.map(({slug}) => ({ params: { slug } }))
+  console.log(paths)
 
   return {
     paths,
@@ -33,28 +34,28 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async ({ params }: any) => {
-  const post = await getSinglePost(params.slug)
+  const article = await getSingleArticle(params.slug)
 
   return {
     props: {
-      post
+      article
     },
     revalidate: 60 * 60
   }
 }
 
-const Post = ({ post }: any) => {
+const Article = ({ article }: any) => {
   return (
     <section className="container lg:px-2 px-5 h-screen lg:w-3/5 mx-auto mt-20">
-      <h1 className="w-full text-5xl font-bold pb-2 mb-6">{post.metadata.title}</h1>
-      {post.metadata.tags.map((tag: string, index: number) => (
+      <h1 className="w-full text-5xl font-bold pb-2 mb-6">{article.metadata.title}</h1>
+      {article.metadata.tags.map((tag: string, index: number) => (
         <Tag key={index} tag={tag} />
       ))}
       <br/>
-      <span className="text-sm text-blue-700 inline-block mt-4">更新日：{post.metadata.updated_on}</span>
-      <div className="mt-20  text-lg">
+      <span className="text-sm text-blue-700 inline-block mt-4">更新日：{article.metadata.updated_on}</span>
+      <div className="mt-20 text-lg">
         {
-          post.markdown ?
+          article.markdown ?
           <ReactMarkdown
             components={{
               code: CodeBlock,
@@ -68,15 +69,15 @@ const Post = ({ post }: any) => {
               pre: ({ children }) => <pre className="mb-10">{children}</pre>,
             }}
           >
-            {post.markdown}
+            {article.markdown}
           </ReactMarkdown>
           : "記事準備中"
         }
-        <Link href="/" className="block mt-20 pb-20 text-blue-600"><span>⇦ ホームに戻る</span></Link>
+        <Link href="/articles/page/1" className="block mt-20 pb-20 text-blue-600 text-right"><span>記事一覧を見る</span></Link>
       </div>
     </section>
   )
 }
 
-export default Post
+export default Article
 

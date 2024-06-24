@@ -21,7 +21,7 @@ const Pagination = (props: Props) => {
           page == currentPage ?
           <li key={page} className="w-8 h-8">
             <Link
-              href={`/posts/page/${page}`}
+              href={`/articles/page/${page}`}
               className="text-sx rounded-full text-white bg-blue-500 block text-center h-max leading-8"
             >
               {page}
@@ -29,7 +29,7 @@ const Pagination = (props: Props) => {
           </li> :
           <li key={page} className="w-8 h-8">
             <Link
-              href={`/posts/page/${page}`}
+              href={`/articles/page/${page}`}
               className="text-sx text-black-900 block text-center h-max leading-8"
             >
               {page}
