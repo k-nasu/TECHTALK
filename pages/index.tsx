@@ -45,7 +45,7 @@ export default function Home({ posts }: Props) {
         </section>
         <section>
           {/* ・別のまとめ方を出す
-            例：技術ジャンルごと（Rails特集・Typscript特集）、個人開発の各フェーズ（初学者向け、中級者・上級者）、個人開発、ポートフォリオ、分野別（デザイン、インフラ、フロント、バックエンド） */}
+            例：技術ジャンルごと（Rails特集・Typescript特集）、個人開発の各フェーズ（初学者向け、中級者・上級者）、個人開発、ポートフォリオ、分野別（デザイン、インフラ、フロント、バックエンド） */}
         </section>
       </main>
       <aside className="lg:basis-1/4 px-4 pt-16">

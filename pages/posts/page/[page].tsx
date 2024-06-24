@@ -4,7 +4,9 @@ import Pagination from "@/components/Pagination/Pagination";
 import { Post } from "@/types/types";
 
 type Props = {
-  posts: Post[]
+  posts: Post[];
+  pageNumbers: number;
+  currentPage: number;
 };
 
 export const getStaticPaths = async () => {
@@ -36,7 +38,7 @@ export const getStaticProps = async (context: any) => {
   };
 };
 
-const pageList = ({ posts, pageNumbers, currentPage} ) => {
+const pageList = ({ posts, pageNumbers, currentPage}: Props ) => {
   return (
     <div className="container lg:w-4/5 h-full mx-auto font-sans">
       <main className="container w-full mt-16">

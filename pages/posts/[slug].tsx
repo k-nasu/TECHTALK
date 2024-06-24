@@ -43,7 +43,7 @@ export const getStaticProps = async ({ params }: any) => {
   }
 }
 
-const Post = ({ post }) => {
+const Post = ({ post }: any) => {
   return (
     <section className="container lg:px-2 px-5 h-screen lg:w-3/5 mx-auto mt-20">
       <h1 className="w-full text-5xl font-bold pb-2 mb-6">{post.metadata.title}</h1>
