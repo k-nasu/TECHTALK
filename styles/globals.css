@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  background-color: "#f3f3f3";
+  background-color: "#FEFEFF";
 }
 
 img {
@@ -14,7 +14,7 @@ img {
 }
 
 p {
-  margin: 7px 0;
+  margin: 50px 0;
   font-weight: 400;
   line-height: 1.7rem;
 }

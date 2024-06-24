@@ -1,4 +1,4 @@
-import { getPostsByPage, getPageNumber } from "@/lib/notionAPI";
+import { getPostsByPage, getPageNumbers } from "@/lib/notionAPI";
 import SinglePost from "@/components/Post/SinglePost";
 import Pagination from "@/components/Pagination/Pagination";
 import { Post } from "@/types/types";
@@ -8,10 +8,10 @@ type Props = {
 };
 
 export const getStaticPaths = async () => {
-  const postNumberPerPages = await getPageNumber()
+  const pageNumbers = await getPageNumbers()
 
   let params = []
-  for (let i = 1; i <= postNumberPerPages; i++) {
+  for (let i = 1; i <= pageNumbers; i++) {
     params.push({ params: { page: i.toString() }})
   }
 
@@ -23,8 +23,7 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (context: any) => {
   const posts = await getPostsByPage(context.params.page);
-  const pageNumbers = await getPageNumber()
-  console.log(pageNumbers)
+  const pageNumbers = await getPageNumbers()
 
   return {
     props: {
@@ -37,10 +36,10 @@ export const getStaticProps = async (context: any) => {
 
 const pageList = ({ posts, pageNumbers} ) => {
   return (
-    <div className="container w-full h-full mx-auto font-sans">
+    <div className="container lg:w-4/5 h-full mx-auto font-sans">
       <main className="container w-full mt-16">
-        <h1 className="text-5xl font-medium text-center mb-16">TECH TALK</h1>
-        <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
+        <h2 className="font-medium text-center mb-16">トレンドの記事</h2>
+        <section className="sm:grid grid-cols-2 mx-4 gap-3">
           {posts.map(post => (
             <SinglePost
               key={post.id}

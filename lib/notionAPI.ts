@@ -112,7 +112,7 @@ export const getPostsByPage = async (page: number) => {
   return allPosts.slice(startIndex, endIndex)
 }
 
-export const getPageNumber = async () => {
+export const getPageNumbers = async () => {
   const allPosts = await getAllPosts()
 
   return Math.floor(allPosts.length / PAGE_SIZE) + (allPosts.length % PAGE_SIZE > 0 ? 1 : 0)

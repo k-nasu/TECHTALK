@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import Link from 'next/link';
+import Tag from '@/components/Tag/Tag';
 
 const CodeBlock = ({ inline, className, children }: any) => {
   if (inline) {
@@ -45,21 +46,19 @@ export const getStaticProps = async ({ params }: any) => {
 const Post = ({ post }) => {
   return (
     <section className="container lg:px-2 px-5 h-screen lg:w-2/5 mx-auto mt-20">
-      <h2 className="w-full text-2xl font-medium ">{post.metadata.title}</h2>
-      <div className="border-b-2 w-1/3 mt-1 border-sky-900"></div>
-      <span className="text-gray-500">更新日：{post.metadata.updated_on}</span>
-      <br />
+      <h2 className="w-full text-4xl font-bold border-b-2 pb-2 mb-6">{post.metadata.title}</h2>
       {post.metadata.tags.map((tag: string, index: number) => (
-        <p
-          key={index}
-          className="text-white bg-sky-900 rounded-xl font-medium mt-2 px-2 inline-block mr-2"
-        >
-          {tag}
-        </p>
+        <Tag key={index} tag={tag} />
       ))}
-      <div className="mt-10 font-medium">
-        <ReactMarkdown components={{ code: CodeBlock }}>{post.markdown}</ReactMarkdown>
-        <Link href="/" className="pb-20 block mt-10 text-sky-900"><span>⇦ ホームに戻る</span></Link>
+      <br/>
+      <span className="text-sm text-gray-500 inline-block mt-3">更新日：{post.metadata.updated_on}</span>
+      <div className="mt-24 font-medium text-lg">
+        {
+          post.markdown ?
+          <ReactMarkdown components={{ code: CodeBlock }}>{post.markdown}</ReactMarkdown>
+          : "記事準備中"
+        }
+        <Link href="/" className="pb-20 block mt-10 text-blue-600"><span>⇦ ホームに戻る</span></Link>
       </div>
     </section>
   )
