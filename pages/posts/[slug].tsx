@@ -58,10 +58,10 @@ const Post = ({ post }: any) => {
           <ReactMarkdown
             components={{
               code: CodeBlock,
-              h2: ({ children }) => <h2 className="text-4xl pb-2 mt-24 mb-8 font-bold border-b-2 border-blue-400">{children}</h2>,
-              h3: ({ children }) => <h3 className="text-2xl font-bold">{children}</h3>,
-              ol: ({ children }) => <ol className="mb-16">{children}</ol>,
-              ul: ({ children }) => <ul className="mb-6 pl-4">{children}</ul>,
+              h2: ({ children }) => <h2 className="text-4xl pb-2 mt-24 mb-10 font-bold border-b-2 border-blue-400">{children}</h2>,
+              h3: ({ children }) => <h3 className="text-2xl font-bold mb-5">{children}</h3>,
+              ol: ({ children }) => <ol className="list-decimal list-inside mb-16">{children}</ol>,
+              ul: ({ children }) => <ul className="mb-16 ml-4 list-disc">{children}</ul>,
               li: ({ children }) => <li className="mb-6">{children}</li>,
               p: ({ children }) => <p className="my-6 leading-8">{children}</p>,
               a: ({ children, href }) => <Link href={href!} rel="noopener noreferrer" target="_blank" className="text-blue-600">{children}</Link>,
