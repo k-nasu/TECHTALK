@@ -25,7 +25,7 @@ export default function Home({ posts }: Props) {
       <aside className="lg:basis-1/4 px-4 pt-16">
         {/* ここにタグの一覧を出す */}
       </aside>
-      <main className="container lg:basis-2/4 lg:mx-5 px-4 pt-16">
+      <main className="container lg:basis-2/4 lg:mx-5 px-4 lg:pt-16">
         <section>
           <h3 className="mb-5">トレンドの記事</h3>
           {posts.map(post => (
