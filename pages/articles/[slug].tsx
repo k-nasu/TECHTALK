@@ -1,12 +1,13 @@
 import React from 'react'
+import { Metadata, ResolvingMetadata } from 'next'
 import { getAllArticles, getSingleArticle } from '@/lib/notionAPI'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import Link from 'next/link';
 import Tag from '@/components/Tag/Tag';
-import type { ClassAttributes, HTMLAttributes } from 'react'
-import type { ExtraProps } from 'react-markdown'
+// import type { ClassAttributes, HTMLAttributes } from 'react'
+// import type { ExtraProps } from 'react-markdown'
 
 const CodeBlock = ({ inline, className, children }: any) => {
   if (inline) {
@@ -62,7 +63,6 @@ const CodeBlock = ({ inline, className, children }: any) => {
 export const getStaticPaths = async () => {
   const allArticles = await getAllArticles();
   const paths = allArticles.map(({slug}) => ({ params: { slug } }))
-  console.log(paths)
 
   return {
     paths,
@@ -78,6 +78,19 @@ export const getStaticProps = async ({ params }: any) => {
       article
     },
     revalidate: 60 * 60
+  }
+}
+
+export async function generateMetadata({ params }: any, parent?: ResolvingMetadata): Promise<Metadata> {
+  const article = await getSingleArticle(params.slug)
+  // const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: article.metadata.title,
+    description: article.metadata.description,
+    // openGraph: {
+    //   images: ['/image.jpg', ...previousImages],
+    // },
   }
 }
 
