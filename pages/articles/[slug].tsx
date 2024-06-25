@@ -128,7 +128,7 @@ const Article = ({ article }: any) => {
 
   const topLink = ({ node, ...props }: any) => {
     return (
-        <li className="pb-2 text-gray-600">
+        <li className="pb-4">
           <a href={"#"+node.position?.start.line.toString()}>{props.children}</a>
         </li>
     );
@@ -145,8 +145,8 @@ const Article = ({ article }: any) => {
       {
         article.markdown ?
         <div className="mt-20 lg:flex flex-row-reverse">
-          <div className="mb-20">
-            <h2 className="pb-3">目次</h2>
+          <div className="mb-20 max-sm:pl-8 lg:w-1/5 text-gray-500">
+            <h2 className="pb-2">目次</h2>
             <ul>
               <ReactMarkdown
                 allowedElements={['h2']}
