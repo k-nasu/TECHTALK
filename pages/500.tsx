@@ -8,7 +8,7 @@ export const metadata:Metadata = {
 
 const ServerError = () => {
   return (
-    <div className="container w-full h-full mx-auto font-sans">
+    <div className="container w-full h-full mx-auto">
       <main className="container w-full mt-16">
         <h3 className="text-5xl font-medium text-center mb-8">サーバーエラーが発生しました</h3>
         <Link href="/" className="text-lg pb-20 block mt-10 text-blue-600 text-center"><span>⇦ ホームに戻る</span></Link>

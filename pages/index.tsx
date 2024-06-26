@@ -24,7 +24,7 @@ export const getStaticProps = async () => {
 export default function Home({ articles }: Props) {
   return (
     <div>
-      <div className="font-sans lg:w-4/5 mx-auto mb-10 h-full lg:flex">
+      <div className="lg:w-4/5 mx-auto mb-10 h-full lg:flex">
         <aside className="lg:basis-1/4 px-4 pt-16">
           {/* ここにタグの一覧を出す */}
         </aside>
