@@ -1,6 +1,7 @@
 import { getArticlesByPage, getPageNumbers } from "@/lib/notionAPI";
 import { Article } from "@/types/types";
 import ArticleList from '@/components/Article/ArticleList'
+import { REVALIDATE_INTERVAL } from '@/constants/constants'
 
 type Props = {
   articles: Article[];
@@ -33,13 +34,13 @@ export const getStaticProps = async (context: any) => {
       pageNumbers,
       currentPage,
     },
-    revalidate: 60 * 60,
+    revalidate: REVALIDATE_INTERVAL,
   };
 };
 
 const pageList = ({ articles, pageNumbers, currentPage}: Props ) => {
   return (
-    <ArticleList articles={articles} pageNumbers={pageNumbers} currentPage={currentPage} />
+    <ArticleList articles={articles} pageNumbers={pageNumbers} currentPage={currentPage} paginationLink={"articles/page"} />
   );
 }
 

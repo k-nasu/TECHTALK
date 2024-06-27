@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import Link from 'next/link';
 import Tag from '@/components/Tag/Tag';
+import { REVALIDATE_INTERVAL } from '@/constants/constants';
 // import type { ClassAttributes, HTMLAttributes } from 'react'
 // import type { ExtraProps } from 'react-markdown'
 
@@ -77,7 +78,7 @@ export const getStaticProps = async ({ params }: any) => {
     props: {
       article
     },
-    revalidate: 60 * 60
+    revalidate: REVALIDATE_INTERVAL
   }
 }
 

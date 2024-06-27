@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md';
-import { NOTION_ARTICLE_QUERY_PAGE_SIZE, ALL_ARTICLES_PAGE_ARTICLE_SIZE } from '@/constants/constants'
+import { NOTION_ARTICLE_QUERY_PAGE_SIZE, ARTICLE_LIST_PAGE_ARTICLE_SIZE } from '@/constants/constants'
 
 const database_id = process.env.NOTION_DATABASE_ID!;
 const client = new Client({ auth: process.env.NOTION_SECRET_TOKEN });
@@ -106,8 +106,8 @@ export const getArticlesForTopPage = async (pageSize: number) => {
 export const getArticlesByPage = async (page: number) => {
   const allArticles = await getAllArticles();
 
-  const startIndex = (page - 1) * ALL_ARTICLES_PAGE_ARTICLE_SIZE
-  const endIndex = startIndex + ALL_ARTICLES_PAGE_ARTICLE_SIZE
+  const startIndex = (page - 1) * ARTICLE_LIST_PAGE_ARTICLE_SIZE
+  const endIndex = startIndex + ARTICLE_LIST_PAGE_ARTICLE_SIZE
 
   return allArticles.slice(startIndex, endIndex)
 }
@@ -115,5 +115,32 @@ export const getArticlesByPage = async (page: number) => {
 export const getPageNumbers = async () => {
   const allArticles = await getAllArticles()
 
-  return Math.floor(allArticles.length / ALL_ARTICLES_PAGE_ARTICLE_SIZE) + (allArticles.length % ALL_ARTICLES_PAGE_ARTICLE_SIZE > 0 ? 1 : 0)
+  return Math.floor(allArticles.length / ARTICLE_LIST_PAGE_ARTICLE_SIZE) + (allArticles.length % ARTICLE_LIST_PAGE_ARTICLE_SIZE > 0 ? 1 : 0)
+}
+
+export const getArticlesByTagAndPage = async (tagName: string, page: number) => {
+  const allArticles = await getAllArticles()
+  const articles = allArticles.filter(article => article.tags.find((tag: string) => tag.toLowerCase() === tagName.toLowerCase()))
+
+  const startIndex = (page - 1) * ARTICLE_LIST_PAGE_ARTICLE_SIZE
+  const endIndex = startIndex + ARTICLE_LIST_PAGE_ARTICLE_SIZE
+
+  return articles.slice(startIndex, endIndex)
+}
+
+export const getPageNumbersByTag = async (tagName: string) => {
+  const allArticles = await getAllArticles()
+  const articles = allArticles.filter(article => article.tags.find((tag: string) => tag.toLowerCase() === tagName.toLowerCase()))
+
+  return Math.floor(articles.length / ARTICLE_LIST_PAGE_ARTICLE_SIZE) + (articles.length % ARTICLE_LIST_PAGE_ARTICLE_SIZE > 0 ? 1 : 0)
+}
+
+export const getAllTags = async () => {
+  const allArticles = await getAllArticles()
+
+  const DuplicatedTags = allArticles.flatMap(article => article.tags)
+  const set = new Set(DuplicatedTags)
+  const tags = Array.from(set)
+
+  return tags
 }

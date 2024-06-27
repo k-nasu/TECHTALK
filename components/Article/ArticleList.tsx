@@ -6,9 +6,10 @@ type Props = {
   articles: Article[];
   pageNumbers: number;
   currentPage: number;
+  paginationLink: string;
 };
 
-const ArticleList = ({ articles, pageNumbers, currentPage}: Props ) => {
+const ArticleList = ({ articles, pageNumbers, currentPage, paginationLink }: Props ) => {
   return (
     <div className="container lg:w-4/5 h-full mx-auto">
       <main className="container w-full mt-16">
@@ -27,7 +28,7 @@ const ArticleList = ({ articles, pageNumbers, currentPage}: Props ) => {
             />
           ))}
         </section>
-        <Pagination pageNumbers={pageNumbers} currentPage={currentPage} />
+        <Pagination pageNumbers={pageNumbers} currentPage={currentPage} paginationLink={paginationLink} />
       </main>
     </div>
   );

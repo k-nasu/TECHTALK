@@ -5,6 +5,7 @@ import { Article } from "@/types/types";
 import Link from "next/link";
 import { INITIAL_PAGE_ARTICLE_SIZE } from "@/constants/constants"
 import Programmer from "@/public/programmer.png"
+import { REVALIDATE_INTERVAL } from '@/constants/constants'
 
 type Props = {
   articles: Article[]
@@ -17,7 +18,7 @@ export const getStaticProps = async () => {
     props: {
       articles,
     },
-    revalidate: 60 * 60,
+    revalidate: REVALIDATE_INTERVAL,
   };
 };
 
