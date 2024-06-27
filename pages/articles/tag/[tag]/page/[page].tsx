@@ -2,12 +2,15 @@ import { getPageNumbersByTag, getArticlesByTagAndPage, getAllTags } from '@/lib/
 import { Article } from '@/types/types'
 import ArticleList from '@/components/Article/ArticleList'
 import { REVALIDATE_INTERVAL } from '@/constants/constants'
+import Pagination from '@/components/Pagination/Pagination'
+import Image from 'next/image'
 
 type Props = {
   articles: Article[];
   pageNumbersByTag: number;
   currentPage: number;
   paginationLink: string;
+  currentTag: string;
 }
 
 type Paths = {
@@ -43,7 +46,7 @@ export const getStaticProps = async (context: any) => {
 
   const articles = await getArticlesByTagAndPage(currentTag, currentPage)
   const pageNumbersByTag = await getPageNumbersByTag(currentTag)
-  const paginationLink = `articles/tag/${currentTag.toLowerCase()}/page`
+  const paginationLink = `articles/tag/${currentTag}/page`
 
   return {
     props: {
@@ -51,14 +54,23 @@ export const getStaticProps = async (context: any) => {
       pageNumbersByTag,
       currentPage,
       paginationLink,
+      currentTag
     },
     revalidate: REVALIDATE_INTERVAL,
   }
 }
 
-const TagList = ({ articles, pageNumbersByTag, currentPage, paginationLink }: Props) => {
+const TagList = ({ articles, pageNumbersByTag, currentPage, paginationLink, currentTag }: Props) => {
   return (
-    <ArticleList articles={articles} pageNumbers={pageNumbersByTag} currentPage={currentPage} paginationLink={paginationLink} />
+    <main className="container lg:w-4/5 h-full mx-auto mt-16">
+      {/* <div className="flex">
+        <h2 className="font-medium text-center mb-16">{currentTag}</h2>
+        <Image src="/public/ruby.png" width={100} height={100} alt="rubyの画像" />
+      </div> */}
+      <h2 className="font-medium text-center mb-16">{currentTag}</h2>
+      <ArticleList articles={articles} />
+      <Pagination pageNumbers={pageNumbersByTag} currentPage={currentPage} paginationLink={paginationLink} />
+    </main>
   )
 }
 

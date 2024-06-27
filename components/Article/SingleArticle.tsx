@@ -14,7 +14,9 @@ const SingleArticle = (props: Article) => {
           <h2 className="text-3xl font-bold mb-3">{title}</h2>
           <div className="mb-5">{description}.........</div>
           {tags?.map((tag: string, index: number) => (
-            <Tag key={index} tag={tag} />
+            <Link key={index} href={`/articles/tag/${tag}/page/1`}>
+              <Tag tag={tag} />
+            </Link>
           ))}
         </section>
       ): (
@@ -23,7 +25,9 @@ const SingleArticle = (props: Article) => {
           <h2 className="text-3xl font-bold mb-3">{title}</h2>
           <div className="mb-5">{description}.........</div>
           {tags?.map((tag: string, index: number) => (
-            <Tag key={index} tag={tag} />
+            <Link key={index} href={`/articles/tag/${tag}/page/1`}>
+              <Tag tag={tag} />
+            </Link>
           ))}
         </section>
       )}

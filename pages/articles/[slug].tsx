@@ -139,7 +139,9 @@ const Article = ({ article }: any) => {
     <section className="container lg:px-2 px-5 h-screen lg:w-4/5 mx-auto mt-20">
       <h1 className="w-full text-5xl font-bold pb-2 mb-6">{article.metadata.title}</h1>
       {article.metadata.tags.map((tag: string, index: number) => (
-        <Tag key={index} tag={tag} />
+        <Link key={index} href={`/articles/tag/${tag}/page/1`} className="hover:shadow-none hover:translate-x-1 transition-all duration-300">
+          <Tag tag={tag} />
+        </Link>
       ))}
       <br/>
       <span className="text-sm text-blue-700 inline-block mt-4">更新日：{article.metadata.updated_on}</span>
