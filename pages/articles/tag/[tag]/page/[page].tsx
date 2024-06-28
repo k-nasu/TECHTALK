@@ -65,7 +65,7 @@ const TagList = ({ articles, pageNumbersByTag, currentPage, paginationLink, curr
   return (
     <main className="container lg:w-4/5 h-full mx-auto mt-16">
       <div className="flex mx-auto justify-center items-center mb-16">
-        <Image src={`/tag_images/${currentTag}.svg`} width={30} height={30} alt={`${currentTag}の画像`} className="w-28 h-28 mr-8 ml-0" />
+        <Image src={`/tag_images/${currentTag}.svg`} width={30} height={30} alt={`${currentTag}の画像`} className="w-24 h-24 mr-8 ml-0" />
         <h2 className="font-medium text-4xl text-center">{currentTag}</h2>
       </div>
       {/* <h2 className="font-medium text-center mb-16">{currentTag}</h2> */}
