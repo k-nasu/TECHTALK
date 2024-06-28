@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from './Navbar/Navbar'
 import { Metadata } from 'next'
 import { SERVICE_NAME } from "@/constants/constants"
+import Footer from './Footer'
 
 export const metadata: Metadata = {
   title: {
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
 
 const Layout = ({ children }: any) => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      {children}
+      <main className="flex-grow">{children}</main>
+      <Footer />
     </div>
   )
 }

@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: any, parent?: ResolvingMetada
 
 const Article = ({ article, recommendedArticles }: any) => {
   return (
-    <section className="container lg:px-2 px-5 h-screen lg:w-4/5 mx-auto mt-20">
+    <section className="container lg:px-2 px-5 lg:w-4/5 mx-auto mt-20">
       <h1 className="w-full text-5xl font-bold pb-2 mb-6">{article.metadata.title}</h1>
       {article.metadata.tags.map((tag: string, index: number) => (
         <Link key={index} href={`/articles/tag/${tag}/page/1`} className="hover:shadow-none hover:translate-x-1 transition-all duration-300">
