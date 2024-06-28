@@ -57,7 +57,7 @@ export const getStaticProps = async (context: any) => {
       paginationLink,
       currentTag
     },
-    revalidate: REVALIDATE_INTERVAL,
+    // revalidate: REVALIDATE_INTERVAL,
   }
 }
 

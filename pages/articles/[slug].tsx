@@ -28,7 +28,7 @@ export const getStaticProps = async ({ params }: any) => {
       article,
       recommendedArticles
     },
-    revalidate: REVALIDATE_INTERVAL
+    // revalidate: REVALIDATE_INTERVAL
   }
 }
 
