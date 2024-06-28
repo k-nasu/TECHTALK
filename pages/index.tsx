@@ -23,7 +23,7 @@ export const getStaticProps = async () => {
       articles,
       tags
     },
-    // revalidate: REVALIDATE_INTERVAL,
+    revalidate: REVALIDATE_INTERVAL,
   };
 };
 

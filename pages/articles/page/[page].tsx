@@ -40,7 +40,7 @@ export const getStaticProps = async (context: any) => {
       currentPage,
       paginationLink
     },
-    // revalidate: REVALIDATE_INTERVAL,
+    revalidate: REVALIDATE_INTERVAL,
   };
 };
 
