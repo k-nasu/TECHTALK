@@ -4,6 +4,7 @@ import ArticleList from '@/components/Article/ArticleList'
 import { REVALIDATE_INTERVAL } from '@/constants/constants'
 import Pagination from '@/components/Pagination/Pagination'
 import Image from 'next/image'
+import ruby from '@/public/ruby.png'
 
 type Props = {
   articles: Article[];
@@ -63,11 +64,11 @@ export const getStaticProps = async (context: any) => {
 const TagList = ({ articles, pageNumbersByTag, currentPage, paginationLink, currentTag }: Props) => {
   return (
     <main className="container lg:w-4/5 h-full mx-auto mt-16">
-      {/* <div className="flex">
-        <h2 className="font-medium text-center mb-16">{currentTag}</h2>
-        <Image src="/public/ruby.png" width={100} height={100} alt="rubyの画像" />
-      </div> */}
-      <h2 className="font-medium text-center mb-16">{currentTag}</h2>
+      <div className="flex mx-auto justify-center items-center mb-16">
+        <Image src={`/tag_images/${currentTag}.svg`} width={30} height={30} alt={`${currentTag}の画像`} className="w-28 h-28 mr-8 ml-0" />
+        <h2 className="font-medium text-4xl text-center">{currentTag}</h2>
+      </div>
+      {/* <h2 className="font-medium text-center mb-16">{currentTag}</h2> */}
       <ArticleList articles={articles} />
       <Pagination pageNumbers={pageNumbersByTag} currentPage={currentPage} paginationLink={paginationLink} />
     </main>
