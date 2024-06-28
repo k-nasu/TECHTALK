@@ -15,7 +15,8 @@ type Props = {
 
 export const getStaticProps = async () => {
   const articles = await getArticlesForTopPage(INITIAL_PAGE_ARTICLE_SIZE);
-  const tags = await getAllTags()
+  const allTags = await getAllTags()
+  const tags = allTags.sort()
 
   return {
     props: {
@@ -53,7 +54,7 @@ export default function Home({ articles, tags }: Props) {
               例：技術ジャンルごと（Rails特集・Typescript特集）、個人開発の各フェーズ（初学者向け、中級者・上級者）、個人開発、ポートフォリオ、分野別（デザイン、インフラ、フロント、バックエンド） */}
           </section>
         </main>
-        <aside className="order-1 lg:basis-1/4 px-4 lg:mt-16 pt-4 shadow-md">
+        <aside className="order-1 lg:basis-1/4 px-4 lg:mt-16 pt-4 shadow-md inline-block h-full">
           <h4 className="font-medium mb-8">タグ検索</h4>
           <div className="flex flex-wrap gap-3 pb-8">
             {tags.map((tag: string, index: number) => (
