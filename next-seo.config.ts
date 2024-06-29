@@ -16,7 +16,7 @@ const SEO = {
   ],
   openGraph: {
     type: 'website',
-    url: 'https://techtalk-wheat.vercel.app/',
+    url: process.env.BASE_URL,
     description: SERVICE_DESCRIPTION,
     locale: 'ja_JP',
     site_name: SERVICE_NAME,
