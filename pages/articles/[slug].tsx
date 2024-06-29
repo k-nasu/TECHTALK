@@ -1,12 +1,12 @@
 import React from 'react'
-import Head from 'next/head';
 import Link from 'next/link';
 import { Metadata, ResolvingMetadata } from 'next'
 import { getAllArticles, getSingleArticle } from '@/lib/notionAPI'
 import Tag from '@/components/Tag/Tag';
 import Markdown from '@/components/Markdown/Markdown';
 import ArticleList from '@/components/Article/ArticleList'
-import { REVALIDATE_INTERVAL, SERVICE_NAME } from '@/constants/constants';
+import { REVALIDATE_INTERVAL } from '@/constants/constants';
+import { NextSeo } from "next-seo";
 
 export const getStaticPaths = async () => {
   const allArticles = await getAllArticles();
@@ -32,26 +32,13 @@ export const getStaticProps = async ({ params }: any) => {
   }
 }
 
-export async function generateMetadata({ params }: any, parent?: ResolvingMetadata): Promise<Metadata> {
-  const article = await getSingleArticle(params.slug)
-  // const previousImages = (await parent).openGraph?.images || []
-
-  return {
-    title: article.metadata.title,
-    description: article.metadata.description,
-    // openGraph: {
-    //   images: ['/image.jpg', ...previousImages],
-    // },
-  }
-}
-
 const Article = ({ article, recommendedArticles }: any) => {
   return (
     <>
-      <Head>
-        <title>{SERVICE_NAME} | {article.metadata.title}</title>
-        <meta name="description" content={article.metadata.description} />
-      </Head>
+      <NextSeo
+        title={article.metadata.title}
+        description={article.metadata.description}
+      />
       <section className="container lg:px-2 px-5 lg:w-4/5 mx-auto mt-20">
         <h1 className="w-full text-5xl font-bold pb-2 mb-6">{article.metadata.title}</h1>
         {article.metadata.tags.map((tag: string, index: number) => (
