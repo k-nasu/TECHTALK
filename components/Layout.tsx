@@ -2,8 +2,8 @@ import React from 'react'
 import Head from 'next/head'
 import Navbar from './Navbar/Navbar'
 import Footer from './Footer'
-import { DefaultSeo } from "next-seo"
-import SEO from "../next-seo.config"
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 
 const Layout = ({ children }: any) => {
   return (

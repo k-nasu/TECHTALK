@@ -1,4 +1,4 @@
-import { SERVICE_NAME, SERVICE_DESCRIPTION } from './constants/constants';
+import { SERVICE_NAME, SERVICE_DESCRIPTION } from './constants/constants'
 
 const SEO = {
   titleTemplate: `%s | ${SERVICE_NAME} | プログラミング、クラウドコンピューティング、AI、データサイエンスが学べるテックブログ`,
@@ -7,12 +7,12 @@ const SEO = {
   additionalMetaTags: [
     {
       property: 'dc:creator',
-      content: SERVICE_NAME,
+      content: SERVICE_NAME
     },
     {
       name: 'application-name',
-      content: SERVICE_NAME,
-    },
+      content: SERVICE_NAME
+    }
   ],
   openGraph: {
     type: 'website',
@@ -26,10 +26,10 @@ const SEO = {
         width: 768,
         height: 783,
         alt: `${SERVICE_NAME}の画像`,
-        type: 'image/png',
-      },
-    ],
-  },
+        type: 'image/png'
+      }
+    ]
+  }
 }
 
-export default SEO;
+export default SEO

@@ -1,11 +1,11 @@
-import SingleArticle from "@/components/Article/SingleArticle";
-import { Article } from "@/types/types";
+import SingleArticle from '@/components/Article/SingleArticle'
+import { Article } from '@/types/types'
 
 type Props = {
-  articles: Article[];
-};
+  articles: Article[]
+}
 
-const ArticleList = ({ articles }: Props ) => {
+const ArticleList = ({ articles }: Props) => {
   return (
     <section className="sm:grid grid-cols-2 mx-4 mb-10 gap-3">
       {articles.map(article => (
@@ -21,7 +21,7 @@ const ArticleList = ({ articles }: Props ) => {
         />
       ))}
     </section>
-  );
+  )
 }
 
 export default ArticleList

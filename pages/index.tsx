@@ -1,20 +1,20 @@
-import Image from "next/image";
-import { getAllTags, getArticlesForTopPage } from "@/lib/notionAPI";
-import SingleArticle from "@/components/Article/SingleArticle";
-import { Article } from "@/types/types";
-import Link from "next/link";
-import { INITIAL_PAGE_ARTICLE_SIZE } from "@/constants/constants"
-import Programmer from "@/public/programmer.png"
+import Image from 'next/image'
+import { getAllTags, getArticlesForTopPage } from '@/lib/notionAPI'
+import SingleArticle from '@/components/Article/SingleArticle'
+import { Article } from '@/types/types'
+import Link from 'next/link'
+import { INITIAL_PAGE_ARTICLE_SIZE } from '@/constants/constants'
+import Programmer from '@/public/programmer.png'
 import { REVALIDATE_INTERVAL } from '@/constants/constants'
 import Tag from '@/components/Tag/Tag'
 
 type Props = {
   articles: Article[]
   tags: string[]
-};
+}
 
 export const getStaticProps = async () => {
-  const articles = await getArticlesForTopPage(INITIAL_PAGE_ARTICLE_SIZE);
+  const articles = await getArticlesForTopPage(INITIAL_PAGE_ARTICLE_SIZE)
   const allTags = await getAllTags()
   const tags = allTags.sort()
 
@@ -23,9 +23,9 @@ export const getStaticProps = async () => {
       articles,
       tags
     },
-    revalidate: REVALIDATE_INTERVAL,
-  };
-};
+    revalidate: REVALIDATE_INTERVAL
+  }
+}
 
 export default function Home({ articles, tags }: Props) {
   return (
@@ -44,10 +44,15 @@ export default function Home({ articles, tags }: Props) {
                   slug={article.slug}
                   tags={article.tags}
                   isPaginationPage={false}
-                  />
+                />
               </div>
             ))}
-            <Link href="/articles/page/1" className="text-blue-600 mb-20 mx-auto pt-5 px-5 block text-right">一覧を見る</Link>
+            <Link
+              href="/articles/page/1"
+              className="text-blue-600 mb-20 mx-auto pt-5 px-5 block text-right"
+            >
+              一覧を見る
+            </Link>
           </section>
           <section>
             {/* ・別のまとめ方を出す
@@ -69,11 +74,15 @@ export default function Home({ articles, tags }: Props) {
         </aside>
       </div>
       {/* <div className="lg:mx-auto mb-20 flex items-center lg:justify-between lg:w-2/5"> */}
-        {/* <h4 className="text-  4xl text-indigo-400">ちょっと休憩......</h4> */}
+      {/* <h4 className="text-  4xl text-indigo-400">ちょっと休憩......</h4> */}
       <div className="mx-auto lg:w-2/5 mb-20">
-        <Image src={Programmer} alt="プログラマーの画像" className="w-72 h-72" />
+        <Image
+          src={Programmer}
+          alt="プログラマーの画像"
+          className="w-72 h-72"
+        />
       </div>
       {/* </div> */}
     </div>
-  );
+  )
 }
