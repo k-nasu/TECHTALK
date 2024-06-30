@@ -1,6 +1,5 @@
 import React from 'react'
 import Link from 'next/link';
-import { Metadata, ResolvingMetadata } from 'next'
 import { getAllArticles, getSingleArticle } from '@/lib/notionAPI'
 import Tag from '@/components/Tag/Tag';
 import Markdown from '@/components/Markdown/Markdown';
