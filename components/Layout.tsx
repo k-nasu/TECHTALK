@@ -11,6 +11,7 @@ const Layout = ({ children }: any) => {
       <DefaultSeo {...SEO} />
       <Head>
         <link rel="icon" href="/techtalk.svg" />
+        <meta name="google-site-verification" content="kQgcdr4Kor47GBRJD07vuXz0L_7ELzmYuiRnqiIBsh8" />
       </Head>
       <Navbar />
       <main className="flex-grow">{children}</main>
