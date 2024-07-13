@@ -97,8 +97,8 @@ const Markdown = (props: any) => {
   const { markdown } = props
 
   return (
-    <div className="lg:flex flex-row-reverse">
-      <div className="mb-20 max-sm:pl-8 lg:w-1/5 text-gray-500">
+    <div className="lg:flex flex-row-reverse relative">
+      <div className=" h-full lg:sticky top-20 mb-20 max-sm:pl-8 lg:w-1/5 text-gray-500">
         <h2 className="pb-2">目次</h2>
         <ul>
           <ReactMarkdown
