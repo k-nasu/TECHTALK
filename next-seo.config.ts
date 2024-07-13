@@ -2,7 +2,7 @@ import { SERVICE_NAME, SERVICE_DESCRIPTION } from './constants/constants'
 
 const SEO = {
   titleTemplate: `%s | ${SERVICE_NAME} | プログラミング、クラウドコンピューティング、AI、データサイエンスが学べるテックブログ`,
-  defaultTitle: SERVICE_NAME,
+  defaultTitle: `${SERVICE_NAME} | プログラミング、クラウドコンピューティング、AI、データサイエンスが学べるテックブログ`,
   description: SERVICE_DESCRIPTION,
   additionalMetaTags: [
     {
