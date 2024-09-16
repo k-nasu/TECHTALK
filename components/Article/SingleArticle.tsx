@@ -17,7 +17,7 @@ const SingleArticle: React.FC<Article> = ({
         <section className="text-gray-800 mb-8 mx-auto rounded-md p-5 shadow-2xl hover:shadow-none hover:translate-y-1 transition-all duration-300">
           <span className="text-sm text-blue-700">{updated_on}</span>
           <br />
-          <h2 className="text-3xl font-bold mb-3">
+          <h2 className="text-3xl hover:text-blue-600 font-bold mb-3">
             <Link href={`/articles/${slug}`}>{title}</Link>
           </h2>
           <div className="mb-5">{description}.........</div>
@@ -31,7 +31,7 @@ const SingleArticle: React.FC<Article> = ({
         <section className=" text-gray-800 mb-8 mx-auto rounded-md p-5 shadow-2xl hover:shadow-none hover:translate-y-1 transition-all duration-300">
           <span className="text-sm text-blue-700">{updated_on}</span>
           <br />
-          <h2 className="text-3xl font-bold mb-3">
+          <h2 className="text-3xl hover:text-blue-600 font-bold mb-3">
             <Link href={`/articles/${slug}`}>{title}</Link>
           </h2>
           <div className="mb-5">{description}.........</div>
