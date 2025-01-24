@@ -40,6 +40,7 @@ export default function Home({ articles, tags }: Props) {
                   id={article.id}
                   title={article.title}
                   description={article.description}
+                  content={article.content}
                   updated_on={article.updated_on}
                   slug={article.slug}
                   tags={article.tags}
