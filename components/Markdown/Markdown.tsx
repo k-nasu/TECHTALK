@@ -39,9 +39,9 @@ const components: Components = {
   li: ({ children }) => (
     <li className="text-lg leading-relaxed">{children}</li>
   ),
-  code: ({ className, children, inline }) => {
+  code: ({ className, children }) => {
     const match = /language-(\w+)/.exec(className || '')
-    return !inline && match ? (
+    return match ? (
       <SyntaxHighlighter
         style={vscDarkPlus as any}
         language={match[1]}
