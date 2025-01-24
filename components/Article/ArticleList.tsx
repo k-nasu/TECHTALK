@@ -13,6 +13,7 @@ const ArticleList = ({ articles }: Props) => {
           key={article.id}
           id={article.id}
           title={article.title}
+          content={article.content}
           description={article.description}
           updated_on={article.updated_on}
           slug={article.slug}
