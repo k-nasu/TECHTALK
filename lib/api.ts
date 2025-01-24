@@ -1,5 +1,5 @@
 import path from 'path'
-import { Article } from '@/types'
+import { Article } from '@/types/types'
 import { getAllArticles } from '@/lib/notionAPI'
 
 const postsDirectory = path.join(process.cwd(), '_posts')
@@ -12,6 +12,7 @@ export async function getAllPosts(): Promise<Article[]> {
       slug: article.slug,
       title: article.title,
       description: article.description || '',
+      isPaginationPage: false,
       content: article.content || '',
       updated_on: article.updated_on,
       tags: article.tags || [],

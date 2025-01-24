@@ -27,7 +27,8 @@ const getPageMetaData = (article: any) => {
     slug: article.properties.Slug.rich_text[0].plain_text,
     tags: article.properties.Tags.multi_select
       ? getTags(article.properties.Tags.multi_select)
-      : null
+      : null,
+    content: article.properties.Content.rich_text[0]?.plain_text || null
   }
 }
 
