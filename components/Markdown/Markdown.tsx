@@ -1,84 +1,150 @@
 import React from 'react'
+import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import remarkGfm from 'remark-gfm'
-import { Components } from 'react-markdown'
+import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+// import type { ClassAttributes, HTMLAttributes } from 'react'
+// import type { ExtraProps } from 'react-markdown'
 
-type Props = {
-  markdown: string
-}
-
-const components: Components = {
-  h1: ({ children }) => (
-    <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>
-  ),
-  h2: ({ children }) => {
-    const id = String(children)
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\-]/g, '')
-    return (
-      <h2 id={id} className="text-2xl font-bold mt-8 mb-4">
-        {children}
-      </h2>
-    )
-  },
-  h3: ({ children }) => (
-    <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>
-  ),
-  p: ({ children }) => (
-    <p className="text-lg leading-relaxed mb-4">{children}</p>
-  ),
-  ul: ({ children }) => (
-    <ul className="list-disc list-inside mb-4 ml-4">{children}</ul>
-  ),
-  ol: ({ children }) => (
-    <ol className="list-decimal list-inside mb-4 ml-4">{children}</ol>
-  ),
-  li: ({ children }) => (
-    <li className="text-lg leading-relaxed">{children}</li>
-  ),
-  code: ({ className, children, inline }) => {
-    const match = /language-(\w+)/.exec(className || '')
-    return !inline && match ? (
-      <SyntaxHighlighter
-        style={vscDarkPlus as any}
-        language={match[1]}
-        PreTag="div"
-        className="text-lg lg:text-xl rounded-lg !bg-[#1E1E1E] !p-4 my-4"
-      >
-        {String(children).replace(/\n$/, '')}
-      </SyntaxHighlighter>
-    ) : (
-      <code className="text-lg px-1.5 py-0.5 rounded bg-gray-100">
-        {children}
-      </code>
-    )
-  },
-  blockquote: ({ children }) => (
-    <blockquote className="text-lg border-l-4 border-primary/20 pl-4 my-6 text-secondary italic">
-      {children}
-    </blockquote>
-  ),
-  a: ({ children, href }) => (
-    <a
-      href={href}
-      className="text-lg text-primary hover:text-primary-dark underline decoration-primary/30 hover:decoration-primary transition-colors"
-    >
-      {children}
-    </a>
+const CodeBlock = ({ inline, className, children }: any) => {
+  if (inline) {
+    return <code className={className}>{children}</code>
+  }
+  const match = /language-(\w+)/.exec(className || '')
+  const lang = match && match[1] ? match[1] : ''
+  return (
+    <SyntaxHighlighter style={a11yDark} language={lang}>
+      {String(children).replace(/\n$/, '')}
+    </SyntaxHighlighter>
   )
 }
 
-const Markdown = ({ markdown }: Props) => {
+// const H2 = ({
+//   node,
+//   children,
+// }: ClassAttributes<HTMLHeadingElement> &
+//   HTMLAttributes<HTMLHeadingElement> &
+//   ExtraProps) => {
+//   const title =
+//     node?.children[0] && 'value' in node?.children[0]
+//       ? node?.children[0].value
+//       : ''
+//   return (
+//     <h2>
+//       <a id={title} href={`#${title}`}>
+//         {children}
+//       </a>
+//     </h2>
+//   )
+// }
+
+// const TocH2 = ({
+//   node,
+// }: ClassAttributes<HTMLHeadingElement> &
+//   HTMLAttributes<HTMLHeadingElement> &
+//   ExtraProps) => {
+//   const title =
+//     node?.children[0] && 'value' in node?.children[0]
+//       ? node?.children[0].value
+//       : ''
+//   return (
+//     <li key={title}>
+//       <a href={`#${title}`}>{title}</a>
+//     </li>
+//   )
+// }
+
+// const H2 = ({
+//       node
+//   }: ClassAttributes<HTMLHeadingElement> & HTMLAttributes<HTMLHeadingElement> & ExtraProps) => {
+//       const text = typeof node !== "undefined" && node.children.length > 0 && "value" in node.children[0]
+//           ? node?.children[0]["value"]
+//           : "";
+//       return <h2 id={text} >
+//           {text}
+//       </h2>
+//   }
+
+// const topLink = ({ node }) => {
+//     const text = typeof node !== "undefined" && node.children.length > 0 && "value" in node.children[0]
+//         ? node?.children[0]["value"]
+//         : "";
+//     return <h2>
+//         <a href={`#${text}`}>{`・${text}`}</a>
+//     </h2>
+// }
+
+const H2 = ({ node, ...props }: any) => {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={components}
+    <h2
+      id={node.position?.start.line.toString()}
+      className="text-4xl pb-2 mt-24 mb-10 font-bold border-b-2 border-blue-400"
     >
-      {markdown}
-    </ReactMarkdown>
+      {props.children}
+    </h2>
+  )
+}
+
+const topLink = ({ node, ...props }: any) => {
+  return (
+    <li className="pb-4">
+      <a href={'#' + node.position?.start.line.toString()}>{props.children}</a>
+    </li>
+  )
+}
+
+const Markdown = (props: any) => {
+  const { markdown } = props
+
+  return (
+    <div className="lg:flex flex-row-reverse relative">
+      <div className=" h-full lg:sticky top-20 mb-20 max-sm:pl-8 lg:w-1/5 text-gray-500">
+        <h2 className="pb-2">目次</h2>
+        <ul>
+          <ReactMarkdown
+            allowedElements={['h2']}
+            components={{
+              h2: topLink
+            }}
+          >
+            {markdown}
+          </ReactMarkdown>
+        </ul>
+      </div>
+      <div className="text-lg lg:w-4/5 lg:pr-20">
+        <ReactMarkdown
+          components={{
+            code: CodeBlock,
+            h2: H2,
+            // h2: ({ children }) => <h2 className="text-4xl pb-2 mt-24 mb-10 font-bold border-b-2 border-blue-400">{children}</h2>,
+            h3: ({ children }) => (
+              <h3 className="text-2xl font-bold mb-5">{children}</h3>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal list-inside mb-16">{children}</ol>
+            ),
+            ul: ({ children }) => (
+              <ul className="mb-16 ml-4 list-disc">{children}</ul>
+            ),
+            li: ({ children }) => <li className="mb-6">{children}</li>,
+            p: ({ children }) => <p className="my-6 leading-8">{children}</p>,
+            a: ({ children, href }) => (
+              <Link
+                href={href!}
+                rel="noopener noreferrer"
+                target="_blank"
+                className="text-blue-600"
+              >
+                {children}
+              </Link>
+            ),
+            pre: ({ children }) => <pre className="mb-10">{children}</pre>
+          }}
+        >
+          {markdown}
+        </ReactMarkdown>
+      </div>
+    </div>
   )
 }
 
