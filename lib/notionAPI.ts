@@ -31,74 +31,103 @@ const getPageMetaData = (article: any) => {
   }
 }
 
-// 記事一覧取得
-export const getAllArticles = async () => {
-  const articles = await client.databases.query({
-    database_id: database_id,
-    page_size: NOTION_ARTICLE_QUERY_PAGE_SIZE,
-    sorts: [
-      {
-        property: 'Updated_on',
-        direction: 'descending'
-      }
-    ],
-    filter: {
-      and: [
-        {
-          property: 'Slug',
-          formula: {
-            string: {
-              is_not_empty: true
-            }
-          }
-        },
-        {
-          property: 'Title',
-          formula: {
-            string: {
-              is_not_empty: true
-            }
-          }
-        },
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true
-          }
-        }
-      ]
-    }
-  })
-
-  const allArticles = articles.results
-
-  return allArticles.map(article => {
-    return getPageMetaData(article)
-  })
+// リトライ関数を追加
+const retry = async <T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  delay = 1000
+): Promise<T> => {
+  try {
+    return await fn()
+  } catch (error) {
+    if (retries <= 0) throw error
+    await new Promise(resolve => setTimeout(resolve, delay))
+    return retry(fn, retries - 1, delay * 2)
+  }
 }
 
-// 記事一部取得
+// getAllArticlesにリトライ機能を追加
+export const getAllArticles = async () => {
+  const fetchArticles = async () => {
+    const articles = await client.databases.query({
+      database_id: database_id,
+      page_size: NOTION_ARTICLE_QUERY_PAGE_SIZE,
+      sorts: [
+        {
+          property: 'Updated_on',
+          direction: 'descending'
+        }
+      ],
+      filter: {
+        and: [
+          {
+            property: 'Slug',
+            formula: {
+              string: {
+                is_not_empty: true
+              }
+            }
+          },
+          {
+            property: 'Title',
+            formula: {
+              string: {
+                is_not_empty: true
+              }
+            }
+          },
+          {
+            property: 'Published',
+            checkbox: {
+              equals: true
+            }
+          }
+        ]
+      }
+    })
+
+    return articles.results
+  }
+
+  try {
+    const allArticles = await retry(fetchArticles)
+    return allArticles.map(article => getPageMetaData(article))
+  } catch (error) {
+    console.error('Failed to fetch articles after retries:', error)
+    return []
+  }
+}
+
+// getSingleArticleにもリトライ機能を追加
 export const getSingleArticle = async (slug: string) => {
-  const res = await client.databases.query({
-    database_id: database_id,
-    filter: {
-      property: 'Slug',
-      formula: {
-        string: {
-          equals: slug
+  const fetchArticle = async () => {
+    const res = await client.databases.query({
+      database_id: database_id,
+      filter: {
+        property: 'Slug',
+        formula: {
+          string: {
+            equals: slug
+          }
         }
       }
+    })
+    return res.results[0]
+  }
+
+  try {
+    const page = await retry(fetchArticle)
+    const metadata = getPageMetaData(page)
+    const mdBlocks = await retry(() => n2m.pageToMarkdown(page.id))
+    const mdString = n2m.toMarkdownString(mdBlocks)
+
+    return {
+      metadata,
+      markdown: mdString.parent || null
     }
-  })
-
-  const page = res.results[0]
-  const metadata = getPageMetaData(page)
-  const mdBlocks = await n2m.pageToMarkdown(page.id)
-  const mdString = n2m.toMarkdownString(mdBlocks)
-
-  return {
-    metadata,
-    markdown: mdString.parent || null
+  } catch (error) {
+    console.error('Failed to fetch article after retries:', error)
+    return null
   }
 }
 
@@ -166,4 +195,17 @@ export const getAllTags = async () => {
   const tags = Array.from(set)
 
   return tags
+}
+
+export const getArticlesByTag = async (targetTag: string, limit?: number): Promise<Article[]> => {
+  const allArticles = await getAllArticles()
+  const filteredArticles = allArticles.filter(article =>
+    article.tags.includes(targetTag)
+  )
+
+  if (limit) {
+    return filteredArticles.slice(0, limit)
+  }
+
+  return filteredArticles
 }

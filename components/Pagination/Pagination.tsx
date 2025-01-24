@@ -1,14 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
 
-interface Props {
+type Props = {
   pageNumbers: number
   currentPage: number
   paginationLink: string
 }
 
-const Pagination = (props: Props) => {
-  const { pageNumbers, currentPage, paginationLink } = props
+const Pagination = ({ pageNumbers, currentPage, paginationLink }: Props) => {
   const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ')
   }
