@@ -46,8 +46,8 @@ const retry = async <T>(
   }
 }
 
-// getAllArticlesにリトライ機能を追加
-export async function getAllArticles() {
+// 記事一覧取得
+export const getAllArticles = async () => {
   try {
     const response = await client.databases.query({
       database_id: database_id,
@@ -86,51 +86,35 @@ export async function getAllArticles() {
       }
     })
 
-    return response.results.map((page: any) => ({
-      id: page.id,
-      title: page.properties.Title.title[0].plain_text,
-      description: page.properties.Description?.rich_text[0]?.plain_text || '',
-      content: page.properties.Content?.rich_text[0]?.plain_text || '',
-      updated_on: page.properties.Updated_on?.date?.start || '',
-      slug: page.properties.Slug?.rich_text[0]?.plain_text || '',
-      tags: page.properties.Tags?.multi_select.map((tag: any) => tag.name) || [],
-    }))
+    return response.results.map(article => getPageMetaData(article))
   } catch (error) {
     console.error('Error fetching articles from Notion:', error)
     return []
   }
 }
 
-// getSingleArticleにもリトライ機能を追加
+// 記事一部取得
 export const getSingleArticle = async (slug: string) => {
-  const fetchArticle = async () => {
-    const res = await client.databases.query({
-      database_id: database_id,
-      filter: {
-        property: 'Slug',
-        formula: {
-          string: {
-            equals: slug
-          }
+  const res = await client.databases.query({
+    database_id: database_id,
+    filter: {
+      property: 'Slug',
+      formula: {
+        string: {
+          equals: slug
         }
       }
-    })
-    return res.results[0]
-  }
-
-  try {
-    const page = await retry(fetchArticle)
-    const metadata = getPageMetaData(page)
-    const mdBlocks = await retry(() => n2m.pageToMarkdown(page.id))
-    const mdString = n2m.toMarkdownString(mdBlocks)
-
-    return {
-      metadata,
-      markdown: mdString.parent || null
     }
-  } catch (error) {
-    console.error('Failed to fetch article after retries:', error)
-    return null
+  })
+
+  const page = res.results[0]
+  const metadata = getPageMetaData(page)
+  const mdBlocks = await n2m.pageToMarkdown(page.id)
+  const mdString = n2m.toMarkdownString(mdBlocks)
+
+  return {
+    metadata,
+    markdown: mdString.parent || null
   }
 }
 
@@ -198,17 +182,4 @@ export const getAllTags = async () => {
   const tags = Array.from(set)
 
   return tags
-}
-
-export const getArticlesByTag = async (targetTag: string, limit?: number): Promise<Article[]> => {
-  const allArticles = await getAllArticles()
-  const filteredArticles = allArticles.filter(article =>
-    article.tags.includes(targetTag)
-  )
-
-  if (limit) {
-    return filteredArticles.slice(0, limit)
-  }
-
-  return filteredArticles
 }

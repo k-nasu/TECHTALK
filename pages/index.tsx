@@ -1,142 +1,88 @@
 import Image from 'next/image'
+import { getAllTags, getArticlesForTopPage } from '@/lib/notionAPI'
 import SingleArticle from '@/components/Article/SingleArticle'
+import { Article } from '@/types/types'
 import Link from 'next/link'
-import useSWR from 'swr'
-import { fetchArticles, fetchTags } from '@/lib/api-client'
-import { useState } from 'react'
-import TagGrid from '@/components/Tag/TagGrid'
+import { INITIAL_PAGE_ARTICLE_SIZE } from '@/constants/constants'
+import Programmer from '@/public/programmer.png'
+import { REVALIDATE_INTERVAL } from '@/constants/constants'
+import Tag from '@/components/Tag/Tag'
 
-// 表示したいメインタグのリスト
-const MAIN_TAGS = [
-  'Rails',
-  'TypeScript',
-  '初学者向け',
-  'React',
-  'Next.js',
-] as const;
+type Props = {
+  articles: Article[]
+  tags: string[]
+}
 
-const ArticleSkeleton = () => (
-  <div className="h-full bg-white rounded-lg shadow p-4">
-    <div className="flex flex-col h-full gap-4">
-      <div className="w-3/4 h-6 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-      <div className="space-y-2">
-        <div className="w-full h-4 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-        <div className="w-2/3 h-4 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-      </div>
-      <div className="flex items-center justify-between mt-auto">
-        <div className="w-16 h-4 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-        <div className="flex gap-2">
-          <div className="w-12 h-4 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-          <div className="w-12 h-4 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded" />
-        </div>
-      </div>
-    </div>
-  </div>
-)
+export const getStaticProps = async () => {
+  const articles = await getArticlesForTopPage(INITIAL_PAGE_ARTICLE_SIZE)
+  const allTags = await getAllTags()
+  const tags = allTags.sort()
 
-export default function Home() {
-  const { data: articles, error: articlesError } = useSWR('articles', fetchArticles)
-  const { data: allTags, error: tagsError } = useSWR('tags', fetchTags)
-  const [showAllTags, setShowAllTags] = useState(false)
-
-  if (articlesError || tagsError) return <div>エラーが発生しました</div>
-
-  // タグ別記事を取得
-  const getArticlesByTag = (tag: string) => {
-    if (!articles) return []
-    return articles.filter(article => article.tags.includes(tag)).slice(0, 5)
+  return {
+    props: {
+      articles,
+      tags
+    },
+    revalidate: REVALIDATE_INTERVAL
   }
+}
 
+export default function Home({ articles, tags }: Props) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* メインコンテンツセクション */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              トレンドの記事
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {!articles ? (
-                // ローディング状態
-                [...Array(16)].map((_, i) => (
-                  <div key={i} className="h-full">
-                    <ArticleSkeleton />
-                  </div>
-                ))
-              ) : (
-                // 記事一覧
-                articles.slice(0, 16).map(article => (
-                  <div key={article.id} className="h-full">
-                    <SingleArticle {...article} isPaginationPage={false} />
-                  </div>
-                ))
-              )}
-            </div>
-            <div className="text-right mt-8">
-              <Link
-                href="/articles/page/1"
-                className="inline-flex items-center text-blue-600 hover:text-blue-700"
-              >
-                <span>一覧を見る</span>
-                <svg
-                  className="w-4 h-4 ml-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* タグナビゲーション */}
-      <section className="bg-white py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-4">
-            <TagGrid />
-          </div>
-        </div>
-      </section>
-
-      {/* タグ別記事セクション */}
-      {MAIN_TAGS.map((tag, index) => {
-        const tagArticles = getArticlesByTag(tag)
-        if (tagArticles.length === 0) return null
-
-        return (
-          <section key={tag} className={`py-12 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-            <div className="max-w-6xl mx-auto px-4">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {tag}の記事
-                </h2>
-                <Link
-                  href={`/articles/tag/${tag}/page/1`}
-                  className="text-blue-600 hover:text-blue-700 text-sm"
-                >
-                  もっと見る
-                </Link>
+    <div>
+      <div className="lg:w-4/5 mx-auto mb-10 h-full lg:flex">
+        <main className="order-2 container lg:basis-2/4 lg:mx-5 px-4 mt-16">
+          <section>
+            <h3 className="mb-5">トレンドの記事</h3>
+            {articles.map(article => (
+              <div key={article.id}>
+                <SingleArticle
+                  id={article.id}
+                  title={article.title}
+                  description={article.description}
+                  updated_on={article.updated_on}
+                  slug={article.slug}
+                  tags={article.tags}
+                  isPaginationPage={false}
+                />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {tagArticles.map(article => (
-                  <div key={article.id} className="h-full">
-                    <SingleArticle {...article} isPaginationPage={false} />
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
+            <Link
+              href="/articles/page/1"
+              className="text-blue-600 mb-20 mx-auto pt-5 px-5 block text-right"
+            >
+              一覧を見る
+            </Link>
           </section>
-        )
-      })}
+          <section>
+            {/* ・別のまとめ方を出す
+              例：技術ジャンルごと（Rails特集・Typescript特集）、個人開発の各フェーズ（初学者向け、中級者・上級者）、個人開発、ポートフォリオ、分野別（デザイン、インフラ、フロント、バックエンド） */}
+          </section>
+        </main>
+        <aside className="order-1 lg:basis-1/4 px-4 lg:mt-16 pt-4 shadow-md inline-block h-full">
+          <h4 className="font-medium mb-8">タグ検索</h4>
+          <div className="flex flex-wrap gap-3 pb-8">
+            {tags.map((tag: string, index: number) => (
+              <Link key={index} href={`/articles/tag/${tag}/page/1`}>
+                <Tag tag={tag} />
+              </Link>
+            ))}
+          </div>
+        </aside>
+        <aside className="order-3 lg:basis-1/4 px-4 pt-16">
+          {/* ここに広告を出す */}
+        </aside>
+      </div>
+      {/* <div className="lg:mx-auto mb-20 flex items-center lg:justify-between lg:w-2/5"> */}
+      {/* <h4 className="text-  4xl text-indigo-400">ちょっと休憩......</h4> */}
+      <div className="mx-auto lg:w-2/5 mb-20">
+        <Image
+          src={Programmer}
+          alt="プログラマーの画像"
+          className="w-72 h-72"
+        />
+      </div>
+      {/* </div> */}
     </div>
   )
 }
