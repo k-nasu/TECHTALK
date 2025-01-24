@@ -47,9 +47,9 @@ const retry = async <T>(
 }
 
 // getAllArticlesにリトライ機能を追加
-export const getAllArticles = async () => {
-  const fetchArticles = async () => {
-    const articles = await client.databases.query({
+export async function getAllArticles() {
+  try {
+    const response = await client.databases.query({
       database_id: database_id,
       page_size: NOTION_ARTICLE_QUERY_PAGE_SIZE,
       sorts: [
@@ -86,14 +86,17 @@ export const getAllArticles = async () => {
       }
     })
 
-    return articles.results
-  }
-
-  try {
-    const allArticles = await retry(fetchArticles)
-    return allArticles.map(article => getPageMetaData(article))
+    return response.results.map((page: any) => ({
+      id: page.id,
+      title: page.properties.Title.title[0].plain_text,
+      description: page.properties.Description?.rich_text[0]?.plain_text || '',
+      content: page.properties.Content?.rich_text[0]?.plain_text || '',
+      updated_on: page.properties.Updated_on?.date?.start || '',
+      slug: page.properties.Slug?.rich_text[0]?.plain_text || '',
+      tags: page.properties.Tags?.multi_select.map((tag: any) => tag.name) || [],
+    }))
   } catch (error) {
-    console.error('Failed to fetch articles after retries:', error)
+    console.error('Error fetching articles from Notion:', error)
     return []
   }
 }
