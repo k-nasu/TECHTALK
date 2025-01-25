@@ -20,8 +20,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const category = params?.category as string
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const category = params?.category as keyof typeof CATEGORY_INFO
   if (!CATEGORY_INFO[category]) {
     return { notFound: true }
   }
@@ -47,13 +47,18 @@ const CategoryPage = ({ category }: Props) => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <div className="text-5xl mb-4">{CATEGORY_INFO[category.id].icon}</div>
         <h1 className="text-3xl font-bold text-gray-800 mb-4">{category.name}</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">{category.description}</p>
       </div>
-
       {category.articles.length > 0 ? (
-        <ArticleList articles={category.articles.map(article => ({...article, isPaginationPage: false}))} />
+        <ArticleList articles={category.articles.map(article => ({
+          ...article,
+          isPaginationPage: false,
+          description: article.description || undefined,
+          content: article.content || undefined,
+          updated_on: article.updated_on || undefined,
+          slug: article.slug || undefined
+        }))} />
       ) : (
         <div className="text-center">
           <p className="text-gray-600 mb-4">このカテゴリーの記事はまだありません</p>
