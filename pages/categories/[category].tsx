@@ -27,16 +27,22 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const allArticles = await getAllArticles()
-  const categoryArticles = allArticles.filter(article =>
-    article.tags.some(tag => tag.toLowerCase().includes(category))
-  )
+  const categoryArticles = allArticles
+    .filter(article => article.tags.some(tag => tag.toLowerCase().includes(category)))
+    .map(article => ({
+      ...article,
+      description: article.description ?? null,
+      content: article.content ?? null,
+      updated_on: article.updated_on ?? null,
+      slug: article.slug ?? null
+    }))
 
   return {
     props: {
       category: {
         id: category,
         ...CATEGORY_INFO[category],
-        articles: categoryArticles,
+        articles: categoryArticles
       },
     },
     revalidate: 60,
