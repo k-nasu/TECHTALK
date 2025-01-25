@@ -64,12 +64,11 @@ const SearchModal = () => {
       fetchSearchResults(searchQuery, page)
     }
   }, [searchQuery, page])
-
   // モーダルを閉じたときの処理
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false)
     router.push('/', undefined, { shallow: true })
-  }
+  }, [router])
 
   // ESCキーでモーダルを閉じる
   useEffect(() => {
@@ -78,7 +77,7 @@ const SearchModal = () => {
     }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
-  }, [])
+  }, [handleClose])
 
   return (
     <Dialog
@@ -141,7 +140,17 @@ const SearchModal = () => {
                       ref={index === results.length - 1 ? lastArticleRef : undefined}
                       className="h-full"
                     >
-                      <SingleArticle {...article} isPaginationPage={false} />
+                      <SingleArticle
+                        key={article.id}
+                        id={article.id}
+                        title={article.title}
+                        content={article.content ?? ''}
+                        description={article.description ?? ''}
+                        updated_on={article.updated_on ?? ''}
+                        slug={article.slug ?? ''}
+                        tags={article.tags}
+                        isPaginationPage={true}
+                      />
                     </div>
                   ))}
                 </div>

@@ -67,13 +67,12 @@ const ArticlePage = ({ article, recommendedArticles }: Props) => {
     const headingElements = document.querySelectorAll<HTMLHeadingElement>('h2')
     const headingElementsArray = Array.from(headingElements)
 
-    // スクロール位置に基づいて現在のセクションの見出しを見つける
     const findCurrentSection = () => {
       if (headingElementsArray.length === 0) return null
 
       const scrollY = window.scrollY
       const viewportHeight = window.innerHeight
-      const headerOffset = 100 // ヘッダーの高さ
+      const headerOffset = 100
 
       // 各見出しの位置を計算
       const headingPositions = headingElementsArray.map((heading, index) => {
@@ -85,45 +84,41 @@ const ArticlePage = ({ article, recommendedArticles }: Props) => {
           : document.documentElement.scrollHeight
 
         return {
-          id: heading.id,
+          heading,
           top: absoluteTop - headerOffset,
           bottom: bottom - headerOffset
         }
       })
 
-      // スクロール位置が含まれるセクションを探す
-      const currentSection = headingPositions.find(
-        section => scrollY >= section.top && scrollY < section.bottom
-      )
+      // 現在のスクロール位置に最も近い見出しを探す
+      let currentHeading = headingPositions[0].heading
+      let minDistance = Math.abs(headingPositions[0].top - scrollY)
 
-      // スクロール位置が最初のセクションより上の場合
-      if (scrollY < headingPositions[0]?.top) {
-        return headingPositions[0]?.id
-      }
+      headingPositions.forEach(({ heading, top }) => {
+        const distance = Math.abs(top - scrollY)
+        if (distance < minDistance) {
+          minDistance = distance
+          currentHeading = heading
+        }
+      })
 
-      // スクロール位置が最後のセクションより下の場合
-      if (scrollY >= headingPositions[headingPositions.length - 1]?.top) {
-        return headingPositions[headingPositions.length - 1]?.id
-      }
-
-      return currentSection?.id
+      return currentHeading.id
     }
 
-    // スクロールハンドラー
     const handleScroll = () => {
-      const currentSectionId = findCurrentSection()
-      if (currentSectionId && currentSectionId !== activeId) {
-        setActiveId(currentSectionId)
-      }
+      requestAnimationFrame(() => {
+        const currentSectionId = findCurrentSection()
+        if (currentSectionId && currentSectionId !== activeId) {
+          setActiveId(currentSectionId)
+        }
+      })
     }
 
-    // スクロールイベントリスナーを追加
     window.addEventListener('scroll', handleScroll, { passive: true })
 
     // 初期状態の設定
     setTimeout(handleScroll, 100)
 
-    // クリーンアップ
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
