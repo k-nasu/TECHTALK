@@ -40,16 +40,19 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const endIndex = startIndex + ARTICLES_PER_PAGE
   const paginatedArticles = allArticles
     .slice(startIndex, endIndex)
-    .map(article => ({
-      id: article.id,
-      title: article.title,
-      description: article.description || undefined,
-      content: article.content || undefined,
-      updated_on: article.updated_on || undefined,
-      slug: article.slug || undefined,
-      tags: article.tags,
-      isPaginationPage: true
-    } as Article))
+    .map(article => {
+      const serializedArticle = {
+        id: article.id,
+        title: article.title,
+        description: article.description ?? null,
+        content: article.content ?? null,
+        updated_on: article.updated_on ?? null,
+        slug: article.slug ?? null,
+        tags: article.tags,
+        isPaginationPage: true
+      }
+      return serializedArticle
+    })
 
   return {
     props: {

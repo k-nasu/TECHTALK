@@ -258,7 +258,11 @@ const ArticlePage = ({ article, recommendedArticles }: Props) => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const allArticles = await getAllArticles()
-  const paths = allArticles.map(({ slug }) => ({ params: { slug } }))
+  const paths = allArticles.map(({ slug }) => ({
+    params: {
+      slug: slug ?? '' // Ensure slug is never null/undefined
+    }
+  }))
 
   return {
     paths,
