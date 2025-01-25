@@ -54,14 +54,16 @@ const ArticlePage = ({ article, recommendedArticles }: Props) => {
   const observerEntries = useRef(new Map()).current
 
   // Extract table of contents from markdown
-  const tableOfContents = article.markdown.match(/^##\s+.+$/gm)?.map(heading => {
-    const text = heading.replace(/^##\s+/, '')
-      .replace(/\*\*/g, '')
-    const id = text.toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-    return { id, text }
-  }) || []
+  const tableOfContents = article.markdown
+    ? article.markdown.match(/^##\s+.+$/gm)?.map(heading => {
+        const text = heading.replace(/^##\s+/, '')
+          .replace(/\*\*/g, '')
+        const id = text.toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, '')
+        return { id, text }
+      }) || []
+    : []
 
   useEffect(() => {
     const headingElements = document.querySelectorAll<HTMLHeadingElement>('h2')
