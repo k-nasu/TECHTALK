@@ -76,6 +76,10 @@ const ArticlePage = ({ article, recommendedArticles }: Props) => {
           <h2 className="mb-5">おすすめ記事</h2>
           <ArticleList articles={recommendedArticles.map(article => ({
             ...article,
+            description: article.description ?? undefined,
+            content: article.content ?? undefined,
+            updated_on: article.updated_on ?? undefined,
+            slug: article.slug ?? undefined,
             isPaginationPage: false
           }))} />
           <Link
@@ -107,21 +111,38 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  if (!params?.slug || typeof params.slug !== 'string') {
-    return { notFound: true } as const
-  }
-
-  const article = await getSingleArticle(params.slug)
+export const getStaticProps: GetStaticProps = async (context) => {
+  const slug = context.params?.slug as string
+  const article = await getSingleArticle(slug)
   const allArticles = await getAllArticles()
-  const recommendedArticles = allArticles.slice(0, 4)
+  const recommendedArticles = allArticles
+    .filter(a => a.slug !== slug)
+    .slice(0, 4)
+    .map(article => ({
+      ...article,
+      description: article.description ?? null,
+      content: article.content ?? null,
+      updated_on: article.updated_on ?? null,
+      slug: article.slug ?? null
+    }))
+
+  const serializedMetadata = {
+    ...article.metadata,
+    description: article.metadata.description ?? null,
+    content: article.metadata.content ?? null,
+    updated_on: article.metadata.updated_on ?? null,
+    slug: article.metadata.slug ?? null
+  }
 
   return {
     props: {
-      article,
+      article: {
+        metadata: serializedMetadata,
+        markdown: article.markdown ?? null
+      },
       recommendedArticles
     },
-    revalidate: REVALIDATE_INTERVAL
+    revalidate: 60
   }
 }
 
