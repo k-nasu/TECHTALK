@@ -1,68 +1,88 @@
-import { getArticlesByPage, getPageNumbers } from '@/lib/notionAPI'
-import { Article } from '@/types/types'
+import { getArticlesByPage, getPageNumbers, getAllArticles } from '@/lib/notionAPI'
+import type { Article } from '@/types/types'
 import ArticleList from '@/components/Article/ArticleList'
 import { REVALIDATE_INTERVAL } from '@/constants/constants'
 import Pagination from '@/components/Pagination/Pagination'
 import { NextSeo } from 'next-seo'
+import { GetStaticPaths, GetStaticProps } from 'next'
+
+const ARTICLES_PER_PAGE = 10
 
 type Props = {
   articles: Article[]
-  pageNumbers: number
   currentPage: number
-  paginationLink: string
+  totalPages: number
 }
 
-export const getStaticPaths = async () => {
-  const pageNumbers = await getPageNumbers()
-
-  let params = []
-  for (let i = 1; i <= pageNumbers; i++) {
-    params.push({ params: { page: i.toString() } })
-  }
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allArticles = await getAllArticles()
+  const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE)
+  const paths = Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: (i + 1).toString() }
+  }))
 
   return {
-    paths: params,
+    paths,
     fallback: false
   }
 }
 
-export const getStaticProps = async (context: any) => {
-  const articles = await getArticlesByPage(context.params.page)
-  const pageNumbers = await getPageNumbers()
-  const currentPage = context.params.page
-  const paginationLink = 'articles/page'
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const page = parseInt(params?.page as string, 10)
+  const allArticles = await getAllArticles()
+
+  const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE)
+  if (page < 1 || page > totalPages) {
+    return { notFound: true }
+  }
+
+  const startIndex = (page - 1) * ARTICLES_PER_PAGE
+  const endIndex = startIndex + ARTICLES_PER_PAGE
+  const paginatedArticles = allArticles
+    .slice(startIndex, endIndex)
+    .map(article => {
+      const serializedArticle = {
+        id: article.id,
+        title: article.title,
+        description: article.description ?? null,
+        content: article.content ?? null,
+        updated_on: article.updated_on ?? null,
+        slug: article.slug ?? null,
+        tags: article.tags,
+        isPaginationPage: true
+      }
+      return serializedArticle
+    })
 
   return {
     props: {
-      articles,
-      pageNumbers,
-      currentPage,
-      paginationLink
+      articles: paginatedArticles,
+      currentPage: page,
+      totalPages
     },
-    revalidate: REVALIDATE_INTERVAL
+    revalidate: 60
   }
 }
 
-const pageList = ({
-  articles,
-  pageNumbers,
-  currentPage,
-  paginationLink
-}: Props) => {
+const ArticlesPage = ({ articles, currentPage, totalPages }: Props) => {
   return (
-    <>
-      <NextSeo title="トレンドの記事一覧" />
-      <main className="container lg:w-4/5 h-full mx-auto mt-16">
-        <h2 className="font-medium text-center mb-16">トレンドの記事</h2>
+    <div className="min-h-screen bg-gray-50">
+      <NextSeo
+        title={`記事一覧 - ページ${currentPage}`}
+        description="技術記事の一覧ページです"
+      />
+      <div className="max-w-6xl mx-auto px-4 py-12">
         <ArticleList articles={articles} />
-        <Pagination
-          pageNumbers={pageNumbers}
-          currentPage={currentPage}
-          paginationLink={paginationLink}
-        />
-      </main>
-    </>
+        <div className="mt-12">
+          <Pagination
+            currentPage={currentPage}
+            pageNumbers={totalPages}
+            paginationLink="/articles/page"
+          />
+        </div>
+      </div>
+    </div>
   )
 }
 
-export default pageList
+export default ArticlesPage

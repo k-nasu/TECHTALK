@@ -2,8 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: #4f46e5; /* インディゴ-600 */
+  --color-primary-dark: #4338ca; /* インディゴ-700 */
+  --color-primary-light: #6366f1; /* インディゴ-500 */
+
+  --color-background: #f9fafb; /* グレー-50 */
+  --color-surface: #ffffff; /* 白 */
+
+  --color-text-primary: #111827; /* グレー-900 */
+  --color-text-secondary: #4b5563; /* グレー-600 */
+  --color-text-tertiary: #9ca3af; /* グレー-400 */
+}
+
 body {
-  background-color: '#FEFEFF';
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
 }
 
 img {
@@ -23,4 +37,43 @@ h3 {
 
 ol p {
   display: inline;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #e2e8f0 transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-text-tertiary);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary);
+  }
+}
+
+.default-icon::before {
+  content: '#';
+  font-size: 1rem;
+  color: #6b7280;
 }

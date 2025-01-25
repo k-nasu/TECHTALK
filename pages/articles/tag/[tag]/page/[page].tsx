@@ -1,100 +1,165 @@
-import {
-  getPageNumbersByTag,
-  getArticlesByTagAndPage,
-  getAllTags
-} from '@/lib/notionAPI'
-import { Article } from '@/types/types'
-import ArticleList from '@/components/Article/ArticleList'
-import { REVALIDATE_INTERVAL, SERVICE_NAME } from '@/constants/constants'
-import Pagination from '@/components/Pagination/Pagination'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import Link from 'next/link'
 import Image from 'next/image'
-import { NextSeo } from 'next-seo'
+import { Article } from '@/types'
+import {
+  getArticlesByTagAndPage,
+  getPageNumbersByTag,
+  getAllArticles
+} from '@/lib/notionAPI'
+import SingleArticle from '@/components/Article/SingleArticle'
+import Pagination from '@/components/Pagination/Pagination'
+import { useState } from 'react'
+import useSWR from 'swr'
+import { getTags } from '@/lib/notionAPI'
+import TagGrid from '@/components/Tag/TagGrid'
+import ArticleList from '@/components/Article/ArticleList'
 
 type Props = {
   articles: Article[]
-  pageNumbersByTag: number
+  tag: string
   currentPage: number
-  paginationLink: string
-  currentTag: string
+  totalPages: number
 }
 
-type Paths = {
-  params: {
-    tag: string
-    page: string
-  }
+const ARTICLES_PER_PAGE = 10
+
+const TagPage = ({ articles, tag, currentPage, totalPages }: Props) => {
+  const [showAllTags, setShowAllTags] = useState(false)
+  const { data: allTags } = useSWR('tags', getTags)
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ヘッダーセクション */}
+      <div className="bg-white border-b">
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
+              <Image
+                src={`/tag_images/${tag}.svg`}
+                width={32}
+                height={32}
+                alt={tag}
+                className="w-8 h-8"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentElement?.classList.add('default-icon')
+                }}
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {tag}
+              </h1>
+              <div className="text-gray-600">
+                {articles.length}件の記事
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 記事一覧セクション */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <ArticleList articles={articles.map(article => ({
+          ...article,
+          description: article.description || undefined,
+          content: article.content || undefined,
+          updated_on: article.updated_on || undefined,
+          slug: article.slug || undefined,
+          isPaginationPage: true
+        }))} />
+        <div className="mt-12">
+          <Pagination
+            currentPage={currentPage}
+            pageNumbers={totalPages}
+            paginationLink={`/articles/tag/${tag.toLowerCase().replace(/\s+/g, '-')}/page`}
+          />
+        </div>
+      </div>
+
+      {/* タグ一覧セクション */}
+      <section className="bg-white py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <TagGrid currentTag={tag} />
+        </div>
+      </section>
+    </div>
+  )
 }
 
-export const getStaticPaths = async () => {
-  const tags = await getAllTags()
-  let params: Paths[] = []
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allArticles = await getAllArticles()
+  const allTags = Array.from(new Set(allArticles.flatMap(article => article.tags)))
 
-  await Promise.all(
-    tags.map(tag => {
-      return getPageNumbersByTag(tag).then(pageNumbersByTag => {
-        for (let i = 1; i <= pageNumbersByTag; i++) {
-          params.push({ params: { tag: tag, page: i.toString() } })
+  const paths: { params: { tag: string; page: string } }[] = []
+
+  for (const tag of allTags) {
+    const tagArticles = allArticles.filter(article =>
+      article.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+    )
+    const totalPages = Math.max(1, Math.ceil(tagArticles.length / ARTICLES_PER_PAGE))
+
+    for (let page = 1; page <= totalPages; page++) {
+      paths.push({
+        params: {
+          tag: tag.toLowerCase().replace(/\s+/g, '-'),
+          page: page.toString()
         }
       })
+    }
+  }
+
+  return {
+    paths,
+    fallback: 'blocking'
+  }
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  try {
+    const tag = (params?.tag as string).replace(/-/g, ' ')
+    const currentPage = parseInt(params?.page as string, 10)
+    const allArticles = await getAllArticles()
+
+    const tagArticles = allArticles.filter(article =>
+      article.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+    ).sort((a, b) => {
+      const dateA = new Date(a.updated_on || '').getTime()
+      const dateB = new Date(b.updated_on || '').getTime()
+      return dateB - dateA
     })
-  )
 
-  return {
-    paths: params,
-    fallback: false
+    const totalPages = Math.max(1, Math.ceil(tagArticles.length / ARTICLES_PER_PAGE))
+
+    if (currentPage < 1 || currentPage > totalPages) {
+      return { notFound: true }
+    }
+
+    const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE
+    const endIndex = startIndex + ARTICLES_PER_PAGE
+    const paginatedArticles = tagArticles.slice(startIndex, endIndex)
+
+    return {
+      props: {
+        articles: paginatedArticles.map(article => ({
+          ...article,
+          description: article.description ?? null,
+          content: article.content ?? null,
+          updated_on: article.updated_on ?? null,
+          slug: article.slug ?? null,
+          isPaginationPage: true
+        })),
+        tag,
+        currentPage,
+        totalPages
+      },
+      revalidate: 60
+    }
+  } catch (error) {
+    console.error('Error in getStaticProps:', error)
+    return { notFound: true }
   }
 }
 
-export const getStaticProps = async (context: any) => {
-  const currentTag = context.params.tag
-  const currentPage = context.params.page
-
-  const articles = await getArticlesByTagAndPage(currentTag, currentPage)
-  const pageNumbersByTag = await getPageNumbersByTag(currentTag)
-  const paginationLink = `articles/tag/${currentTag}/page`
-
-  return {
-    props: {
-      articles,
-      pageNumbersByTag,
-      currentPage,
-      paginationLink,
-      currentTag
-    },
-    revalidate: REVALIDATE_INTERVAL
-  }
-}
-
-const TagList = ({
-  articles,
-  pageNumbersByTag,
-  currentPage,
-  paginationLink,
-  currentTag
-}: Props) => {
-  return (
-    <>
-      <NextSeo title={`${currentTag}の記事一覧`} />
-      <main className="container lg:w-4/5 h-full mx-auto mt-16">
-        <div className="flex mx-auto justify-center items-center mb-16">
-          <Image
-            src={`/tag_images/${currentTag}.svg`}
-            width={30}
-            height={30}
-            alt={`${currentTag}の画像`}
-            className="w-24 h-24 mr-4 ml-0"
-          />
-          <h2 className="font-medium text-4xl text-center">{currentTag}</h2>
-        </div>
-        <ArticleList articles={articles} />
-        <Pagination
-          pageNumbers={pageNumbersByTag}
-          currentPage={currentPage}
-          paginationLink={paginationLink}
-        />
-      </main>
-    </>
-  )
-}
-
-export default TagList
+export default TagPage
