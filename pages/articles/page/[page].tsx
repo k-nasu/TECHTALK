@@ -49,7 +49,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
       slug: article.slug || undefined,
       tags: article.tags,
       isPaginationPage: true
-    }))
+    } as Article))
 
   return {
     props: {
