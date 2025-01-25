@@ -10,7 +10,7 @@ import SingleArticle from '@/components/Article/SingleArticle'
 import Pagination from '@/components/Pagination/Pagination'
 import { useState } from 'react'
 import useSWR from 'swr'
-import { getAllTags } from '@/lib/notionAPI'
+import { getTags } from '@/lib/notionAPI'
 import TagGrid from '@/components/Tag/TagGrid'
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 
 const TagPage = ({ articles, tag, numberOfPage, currentPage }: Props) => {
   const [showAllTags, setShowAllTags] = useState(false)
-  const { data: allTags } = useSWR('tags', getAllTags)
+  const { data: allTags } = useSWR('tags', getTags)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -62,7 +62,14 @@ const TagPage = ({ articles, tag, numberOfPage, currentPage }: Props) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
               {articles.map(article => (
                 <div key={article.id}>
-                  <SingleArticle {...article} isPaginationPage={true} />
+                  <SingleArticle
+                    {...article}
+                    description={article.description || undefined}
+                    content={article.content || undefined}
+                    updated_on={article.updated_on || undefined}
+                    slug={article.slug || undefined}
+                    isPaginationPage={true}
+                  />
                 </div>
               ))}
             </div>
@@ -111,7 +118,7 @@ const TagPage = ({ articles, tag, numberOfPage, currentPage }: Props) => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const allTags = await getAllTags()
+  const allTags = await getTags()
   const paths = []
 
   for (const tag of allTags) {
@@ -139,9 +146,17 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const articles = await getArticlesByTagAndPage(tag, page)
   const numberOfPage = await getPageNumbersByTag(tag)
 
+  const serializedArticles = articles.map(article => ({
+    ...article,
+    description: article.description ?? null,
+    content: article.content ?? null,
+    updated_on: article.updated_on ?? null,
+    slug: article.slug ?? null
+  }))
+
   return {
     props: {
-      articles,
+      articles: serializedArticles,
       tag,
       numberOfPage,
       currentPage: page,
